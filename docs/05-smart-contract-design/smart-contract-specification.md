@@ -185,3 +185,20 @@ All state-mutating methods emit structured JSON events (`EVENT_JSON:{"standard":
 | `SC-TEST-06` | Duplicate `project_id` submitted to `create_project` | Panics with `"ERR_DUPLICATE_PROJECT_ID"`. |
 | `SC-TEST-07` | Non-auditor account calls `record_ai_attestation` | Panics with `"ERR_UNAUTHORIZED_AUDITOR"`. |
 
+---
+
+## 7. Phase 2 Implementation & Verification Record
+
+- **Implementation Crate:** [`contracts/fundora-escrow`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/Cargo.toml) (`near-sdk = "5.6.0"`, resolved to `5.30.1`, Rust `1.95.0`).
+- **Implemented Modules:**
+  - [`src/errors.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/errors.rs) — Deterministic error codes (`ERR_*`).
+  - [`src/models.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/models.rs) — `ProjectStatus` (`Active`, `PayoutInFlight`, `Completed`, `Disputed`, `RefundInFlight`, `Refunded`, `ReconciliationRequired`), `MilestoneStatus` (`Pending`, `SubmittedForVote`, `PayoutInFlight`, `Completed`, `Rejected`, `Failed`, `ReconciliationRequired`), `BarangayConfig`, `BarangayView`, `MilestoneInput`, `Milestone`, `Project`, `AiAttestation`.
+  - [`src/events.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/events.rs) — NEP-297 `EVENT_JSON` emitter.
+  - [`src/lib.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/lib.rs) — Complete `FundoraContract` implementation including `retry_failed_milestone_payout` and `retry_failed_refund` recovery methods and configurable `2..=5` milestone splits (`percentage_bps` summing to `10000`, natively supporting both `40/40/20` and `40/30/30`).
+- **Compiled WASM Artifact:**
+  - Path: `contracts/fundora-escrow/target/wasm32-unknown-unknown/release/fundora_escrow.wasm`
+  - Size: `389,772 bytes` (`380.64 KB`)
+  - SHA-256: `a25d34cd0eec0ea8494a9680bd453cbe748d7f8cfd3ac34e3099a754fce9976b`
+- **Automated Verification Results:** `22/22` tests passing (`20` unit tests in [`src/tests.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/tests.rs) + `2` multi-account sandbox integration & WASM verification tests in [`tests/sandbox_integration.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/tests/sandbox_integration.rs)).
+
+

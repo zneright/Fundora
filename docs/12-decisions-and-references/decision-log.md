@@ -110,3 +110,13 @@ This Decision Log records all foundational product, security, blockchain, AI, da
 - **Consequences:** High credibility with hackathon judges, civic auditors, and community users.
 - **Approval Status:** `Approved — Authorized for Implementation (Nov 7, 2026)`
 
+---
+
+### `ADR-10`: Configurable `10,000 bps` Milestone Splits (`40/40/20` and `40/30/30`) & Asynchronous Callback Reconciliation
+- **Decision:** Implement `FundoraContract::create_project` to accept `2..=5` configurable milestone phases (`Vec<MilestoneInput>`) whose `percentage_bps > 0` sum to `10,000 bps` (`100.00%`) and whose `amount_yocto` sum to `total_budget_yocto`, natively supporting both `40/40/20` (`[4000, 4000, 2000]`) and `40/30/30` (`[4000, 3000, 3000]`) splits. Pair all outbound transfers (`Promise::new(recipient).transfer`) with `reserved_in_flight_yocto` locks (`PayoutInFlight`, `RefundInFlight`), private callbacks (`on_transfer_complete`, `on_refund_complete`), and `ReconciliationRequired` recovery methods (`retry_failed_milestone_payout`, `retry_failed_refund`).
+- **Reason:** Ensures full compatibility with both standard Philippine SK infrastructure tranche schedules (`40/40/20` and `40/30/30`) while preventing cross-shard balance desynchronization if an asynchronous NEAR transfer fails.
+- **Source Evidence:** [`contracts/fundora-escrow/src/lib.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/lib.rs), [`contracts/fundora-escrow/src/tests.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/tests.rs).
+- **Consequences:** Strict financial conservation (`remaining + reserved_in_flight + disbursed + refunded == total_budget`) across all normal and failure-recovery paths.
+- **Approval Status:** `Implemented & Verified in Phase 2 (Nov 7, 2026)`
+
+

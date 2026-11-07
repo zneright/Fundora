@@ -108,9 +108,9 @@ flowchart LR
 | Phase | Status | Commit Message | Verification & Test Results |
 | :--- | :--- | :--- | :--- |
 | **Phase 0 — SDLC Planning Package** | **COMPLETED** (`a24c92d`) | `docs: complete Fundora SDLC planning package` | All 12 formal SDLC documents authored and cross-checked (`FD-SDLC-01` through `FD-SDLC-12`). |
-| **Phase 1 — Workspace Foundation, Hardened Data Layer & Registration** | **COMPLETED** | `feat(phase-1): establish Fundora foundation and registration` | `vitest run` (`11/11` tests passing across `registrationAndPsgc.test.tsx` and `firestoreRulesAndSecurity.test.ts`); `npm run build` (`tsc -b && vite build`) exit code `0`. |
-| **Phase 2 — NEAR Rust Smart Contract (`near-sdk-rs`)** | **PENDING USER REVIEW OF PHASE 1** | `feat(phase-2): implement and test NEAR escrow contract` | Scheduled next upon Phase 1 approval. |
-| **Phase 3 — Server-Side AI Auditor APIs** | **PENDING** | `feat(phase-3): implement protected AI auditor APIs` | Scheduled after Phase 2. |
+| **Phase 1 — Workspace Foundation, Hardened Data Layer & Registration** | **COMPLETED** (`2ab413b`) | `feat(phase-1): establish Fundora foundation and registration` | `vitest run` (`11/11` tests passing across `registrationAndPsgc.test.tsx` and `firestoreRulesAndSecurity.test.ts`); `npm run build` (`tsc -b && vite build`) exit code `0`. |
+| **Phase 2 — NEAR Rust Smart Contract (`near-sdk-rs`)** | **COMPLETED** | `feat(phase-2): implement and test NEAR escrow contract` | `cargo test` (`22/22` tests passing: `20/20` unit tests in `src/tests.rs` + `2/2` sandbox integration & WASM tests in `tests/sandbox_integration.rs`); `wasm32-unknown-unknown` release build (`389,772 bytes`, SHA-256 `a25d34cd0eec0ea8494a9680bd453cbe748d7f8cfd3ac34e3099a754fce9976b`) exit code `0`. |
+| **Phase 3 — Server-Side AI Auditor APIs** | **PENDING USER REVIEW OF PHASE 2** | `feat(phase-3): implement protected AI auditor APIs` | Scheduled next upon Phase 2 approval. |
 | **Phase 4 — NEAR Wallet Selector & Core Role Workspaces** | **PENDING** | `feat(phase-4): integrate NEAR wallet and core workspaces` | Scheduled after Phase 3. |
 | **Phase 5 — Public Transparency Hub, Receipts & Judge Demo** | **PENDING** | `feat(phase-5): implement transparency and judge demo features` | Scheduled after Phase 4. |
 | **Phase 6 — End-to-End QA & Release Verification** | **PENDING** | `release(phase-6): complete Fundora MVP verification` | Scheduled after Phase 5. |

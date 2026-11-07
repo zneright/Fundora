@@ -56,3 +56,14 @@ In **Fundora**, every architectural boundary is backed by automated, measurable 
 ### 3.4 Isolated Judge Demo Environment Tests
 1. **`test_demo_sandbox_isolation`:** Execute Demo Mode role switches (`Demo Admin`, `Demo SK`, `Demo Resident`) in `brgy_demo_001` and verify that no documents or on-chain records in non-demo barangays are modified.
 
+---
+
+## 4. Executed Verification Evidence Log
+
+| Phase | Test Suite / Command | Total Tests | Passed | Failed | Evidence / Notes |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Phase 1** | `npx vitest run` (`src/test/registrationAndPsgc.test.tsx`, `src/test/firestoreRulesAndSecurity.test.ts`) | `11` | `11` | `0` | Verified PSGC cascading, NCR fallback, age routing (`<15`, `15–30`, `>30`), selective resubmission presets, and hardened `firestore.rules` (zero `inAppWalletSecret`). |
+| **Phase 2** | `cargo test` ([`src/tests.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/tests.rs)) | `20` | `20` | `0` | Verified `SC-TEST-01` through `SC-TEST-07`: multi-barangay isolation, RBAC default `false`, `40/40/20` & `40/30/30` milestone splits, exact `60%` quorum math, `PayoutInFlight` callback rollback/retry, treasury-only refunds, and AI attestation trust boundaries. |
+| **Phase 2** | `cargo test` ([`tests/sandbox_integration.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/tests/sandbox_integration.rs)) | `2` | `2` | `0` | Multi-account lifecycle simulation with `PromiseResult::Failed` & `PromiseResult::Successful` callback verification + compiled WASM (`389,772 bytes`, SHA-256 `a25d34cd0eec0ea8494a9680bd453cbe748d7f8cfd3ac34e3099a754fce9976b`) header and export verification. |
+
+
