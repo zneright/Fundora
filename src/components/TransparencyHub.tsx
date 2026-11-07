@@ -282,6 +282,67 @@ export const TransparencyHub: React.FC<TransparencyHubProps> = ({
             exposed.
           </span>
         </div>
+
+        {/* Public Treasury Spending Analytics Summary */}
+        <div
+          style={{
+            marginTop: '0.9rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: '0.65rem',
+            padding: '0.85rem',
+            borderRadius: 14,
+            background: 'var(--bg-elevated)',
+            border: '1px solid var(--border-primary)',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+              Initiatives Indexed
+            </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900 }}>{publicProjects.length} Projects</div>
+            <div style={{ fontSize: '0.72rem', opacity: 0.75 }}>Filtered jurisdiction</div>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+              Total Budget Committed
+            </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-blue)' }}>
+              {formatNear(publicProjects.reduce((acc, p) => acc + (Number(p.totalBudgetNear) || 0), 0))}
+            </div>
+            <div style={{ fontSize: '0.72rem', opacity: 0.75 }}>
+              Approx. {formatPhp(publicProjects.reduce((acc, p) => acc + (p.totalBudgetPhp || 0), 0))}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+              Settled Tranches
+            </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-green)' }}>
+              {formatNear(
+                publicProjects.reduce((acc, p) => {
+                  const cp = p.onChainProject;
+                  return acc + (cp ? Number(yoctoToNear(cp.total_disbursed_yocto)) || 0 : 0);
+                }, 0)
+              )}
+            </div>
+            <div style={{ fontSize: '0.72rem', opacity: 0.75 }}>Disbursed via 60% Quorum</div>
+          </div>
+          <div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+              Active Escrow
+            </div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-yellow)' }}>
+              {formatNear(
+                publicProjects.reduce((acc, p) => {
+                  const cp = p.onChainProject;
+                  return acc + (cp ? Number(yoctoToNear(cp.remaining_balance_yocto)) || 0 : 0);
+                }, 0)
+              )}
+            </div>
+            <div style={{ fontSize: '0.72rem', opacity: 0.75 }}>Locked in Smart Contract</div>
+          </div>
+        </div>
       </div>
 
       {/* Project Transparency Cards */}

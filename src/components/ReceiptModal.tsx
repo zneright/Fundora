@@ -121,7 +121,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ receipt, onClose }) 
               <Receipt size={18} /> Fundora Transaction-Linked Digital Receipt
             </h3>
             <p className="bank-card-subtitle">
-              Serial: <code data-testid="receipt-modal-serial">{receipt.receiptSerialNumber}</code>
+              Serial: <code data-testid="receipt-modal-serial">{receipt.receiptSerialNumber}</code> • Protocol Settlement Voucher (Non-Statutory)
             </p>
           </div>
           <button

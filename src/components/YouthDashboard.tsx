@@ -21,6 +21,9 @@ import {
   CheckCircle2,
   AlertTriangle,
   FileSearch,
+  Filter,
+  Layers,
+  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNearWallet } from '../contexts/NearWalletContext';
@@ -32,6 +35,8 @@ import {
 } from '../services/nearContract.service';
 import type { ProposalDocument } from '../types';
 import { formatNear, formatPhp, yoctoToNear } from '../utils/currency';
+import { SKCelebrationModal } from './SKCelebrationModal';
+import { ImageCarousel } from './ImageCarousel';
 
 export const YouthDashboard: React.FC = () => {
   const { userProfile } = useAuth();
@@ -402,11 +407,49 @@ export const YouthDashboard: React.FC = () => {
                                 gap: '0.5rem',
                               }}
                             >
-                              <div data-testid={`youth-vote-tally-${prop.id}-${m.index}`}>
-                                Tally: <strong>{m.votes_approve} Approve</strong> /{' '}
-                                <strong>{m.votes_reject} Reject</strong> ({totalVotes}/
-                                {chainProj.min_votes} min votes • {approvePct}% approval vs{' '}
-                                {chainProj.quorum_bps / 100}% required)
+                              <div data-testid={`youth-vote-tally-${prop.id}-${m.index}`} style={{ width: '100%' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                  <span>
+                                    Tally: <strong>{m.votes_approve} Approve</strong> /{' '}
+                                    <strong>{m.votes_reject} Reject</strong> ({totalVotes}/
+                                    {chainProj.min_votes} min votes • {approvePct}% approval vs{' '}
+                                    {chainProj.quorum_bps / 100}% required)
+                                  </span>
+                                  <span style={{ fontSize: '0.72rem', color: approvePct >= (chainProj.quorum_bps / 100) ? 'var(--accent-green)' : 'var(--text-muted)', fontWeight: 700 }}>
+                                    {approvePct >= (chainProj.quorum_bps / 100) ? '✓ Quorum Reached' : 'Quorum Pending'}
+                                  </span>
+                                </div>
+
+                                {/* Visual Dual-Color Quorum Progress Bar */}
+                                <div
+                                  style={{
+                                    height: '8px',
+                                    borderRadius: '9999px',
+                                    background: 'var(--bg-elevated)',
+                                    overflow: 'hidden',
+                                    display: 'flex',
+                                    position: 'relative',
+                                    marginBottom: '0.65rem',
+                                    border: '1px solid var(--border-subtle)',
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      width: `${totalVotes > 0 ? (m.votes_approve / totalVotes) * 100 : 0}%`,
+                                      background: 'var(--accent-green)',
+                                      transition: 'width 0.3s ease',
+                                    }}
+                                    title={`Approve: ${m.votes_approve}`}
+                                  />
+                                  <div
+                                    style={{
+                                      width: `${totalVotes > 0 ? (m.votes_reject / totalVotes) * 100 : 0}%`,
+                                      background: 'var(--accent-danger)',
+                                      transition: 'width 0.3s ease',
+                                    }}
+                                    title={`Reject: ${m.votes_reject}`}
+                                  />
+                                </div>
                               </div>
 
                               {m.status === 'SubmittedForVote' && !isViewerOnly && (
@@ -473,6 +516,7 @@ export const YouthDashboard: React.FC = () => {
           )}
         </div>
       </div>
+      <SKCelebrationModal />
     </div>
   );
 };
