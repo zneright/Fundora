@@ -23,15 +23,32 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
+    function isActiveOrApproved(userData) {
+      return userData.status == "active" || userData.verificationStatus == "approved";
+    }
+
     function isSystemAdmin() {
-      return isAuthenticated() && currentUser().role == "system_admin" && currentUser().status == "active";
+      return isAuthenticated()
+        && currentUser().role == "system_admin"
+        && isActiveOrApproved(currentUser());
     }
 
     function isScopedBarangayAdmin(barangayId) {
       return isAuthenticated()
         && currentUser().role == "barangay_admin"
-        && currentUser().status == "active"
+        && isActiveOrApproved(currentUser())
         && currentUser().barangayId == barangayId;
+    }
+
+    function isDocumentOwner(docData) {
+      return isAuthenticated()
+        && (docData.ownerUid == request.auth.uid || docData.uid == request.auth.uid);
+    }
+
+    function hasNoForbiddenSecretKeys(data) {
+      return !("inAppWalletSecret" in data)
+        && !("privateKey" in data)
+        && !("secretKey" in data);
     }
 
     // 1. BARANGAYS: Publicly readable for registration & transparency; writable only by Admins
@@ -41,16 +58,16 @@ service cloud.firestore {
       allow update, delete: if isSystemAdmin() || isScopedBarangayAdmin(barangayId);
     }
 
-    // 2. USERS: No open global listing! Scoped read; protected role/verification fields; no secret keys
+    // 2. USERS: No open global listing! Scoped read/list by barangay; protected role/verification fields; no secret keys
     match /users/{userId} {
       allow get: if isOwner(userId) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
-      allow list: if isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin");
+      allow list: if isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
       allow create: if isOwner(userId)
         && request.resource.data.role in ["resident", "viewer"]
-        && !("inAppWalletSecret" in request.resource.data);
+        && hasNoForbiddenSecretKeys(request.resource.data);
       allow update: if (isOwner(userId)
           && !request.resource.data.diff(resource.data).affectedKeys().hasAny(["role", "verified", "verificationStatus"])
-          && !("inAppWalletSecret" in request.resource.data))
+          && hasNoForbiddenSecretKeys(request.resource.data))
         || isSystemAdmin()
         || isScopedBarangayAdmin(resource.data.barangayId);
       allow delete: if isOwner(userId) || isSystemAdmin();
@@ -60,14 +77,14 @@ service cloud.firestore {
     match /registration_records/{userId} {
       allow read: if isOwner(userId) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
       allow create, update: if (isOwner(userId) || isScopedBarangayAdmin(request.resource.data.barangayId) || isSystemAdmin())
-        && !("inAppWalletSecret" in request.resource.data);
+        && hasNoForbiddenSecretKeys(request.resource.data);
       allow delete: if isOwner(userId) || isSystemAdmin();
     }
 
     match /uploaded_documents/{docId} {
-      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId));
-      allow create, update: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
-      allow delete: if isAuthenticated() && (resource.data.uid == request.auth.uid || isSystemAdmin());
+      allow read: if isDocumentOwner(resource.data) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow create, update: if isDocumentOwner(request.resource.data) && hasNoForbiddenSecretKeys(request.resource.data);
+      allow delete: if isDocumentOwner(resource.data) || isSystemAdmin();
     }
 
     // 4. AI VERIFICATION & AI AUDIT RECORDS: Read-only for clients; written ONLY by Backend Admin SDK
@@ -98,18 +115,16 @@ service cloud.firestore {
     }
 
     match /duplicate_reports/{reportId} {
-      allow read: if isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin");
-      allow create, update: if isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin");
+      allow read: if isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow create, update: if isSystemAdmin() || isScopedBarangayAdmin(request.resource.data.barangayId);
       allow delete: if isSystemAdmin();
     }
 
     // 6. NON-CUSTODIAL WALLET LINKS (NEAR Account IDs ONLY — Never private keys)
     match /wallet_links/{userId} {
-      allow read: if isOwner(userId) || isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin");
+      allow read: if isOwner(userId) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
       allow create, update: if isOwner(userId)
-        && !("inAppWalletSecret" in request.resource.data)
-        && !("privateKey" in request.resource.data)
-        && !("secretKey" in request.resource.data);
+        && hasNoForbiddenSecretKeys(request.resource.data);
       allow delete: if isOwner(userId) || isSystemAdmin();
     }
 
@@ -123,7 +138,9 @@ service cloud.firestore {
 
     match /transaction_references/{txHash} {
       allow read: if true;
-      allow create, update: if isAuthenticated();
+      allow create, update: if isAuthenticated()
+        && (currentUser().barangayId == request.resource.data.barangayId || isSystemAdmin())
+        && hasNoForbiddenSecretKeys(request.resource.data);
       allow delete: if false;
     }
 

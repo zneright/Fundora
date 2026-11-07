@@ -46,6 +46,17 @@ Each technical, security, operational, and schedule risk is evaluated by:
 - **`RISK-05` & `RISK-06` (Asynchronous Callback & Off-Chain Reconciliation):** **MITIGATED & VERIFIED IN PHASES 2 & 4** — `PayoutInFlight` and `RefundInFlight` prevent premature payout confirmation; `reconcileProjectState` recovers interrupted Firestore writes from authoritative NEAR state. Verified in `src/test/nearWalletAndWorkspaces.test.tsx`.
 - **`RISK-12` (Predictable Identifier Hashing Privacy Risk):** **FLAGGED, REMEDIATED & VERIFIED IN PHASE 4** — Plain SHA-256 over predictable personal identifiers (`idNumber`, `mobile`, `name + birthdate`) was replaced with server-secret-keyed `HMAC-SHA256` (`computeIdentityHmacSha256` using `IDENTITY_HMAC_SECRET`) in [`api/_lib/security.ts`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/api/_lib/security.ts) and verified in [`src/test/nearWalletAndWorkspaces.test.tsx`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/src/test/nearWalletAndWorkspaces.test.tsx). Note: Production deployment must set a strong ($\ge 32$-byte) `IDENTITY_HMAC_SECRET` environment variable.
 
+---
+
+## 4. Phase 6 Security Audit Findings & Dispositions
+
+| Finding ID | Severity | Component | Description | Resolution / Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **`SEC-AUDIT-01`** | **HIGH** | [`firestore.rules`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/firestore.rules) | `allow list` on `/users/{userId}` and reads on `/duplicate_reports` and `/wallet_links` checked `currentUser().role == "barangay_admin"` without enforcing `resource.data.barangayId == currentUser().barangayId`; `/uploaded_documents/{docId}` checked `resource.data.uid` whereas `UploadedDocumentRecord` uses `ownerUid`. | **FIXED & VERIFIED IN PHASE 6** — Enforced `isScopedBarangayAdmin(resource.data.barangayId)` across `/users`, `/duplicate_reports`, `/wallet_links`, and `/transaction_references`; added `isDocumentOwner(docData)` supporting both `ownerUid` and `uid`; enforced `hasNoForbiddenSecretKeys(request.resource.data)`. Verified in [`src/test/phase6E2eAndSecurityAudit.test.tsx`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/src/test/phase6E2eAndSecurityAudit.test.tsx). |
+| **`SEC-AUDIT-02`** | **MEDIUM** | [`.env.example`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/.env.example) | Server-only environment template was missing `IDENTITY_HMAC_SECRET=` (introduced for `RISK-12`) and server-side NEAR RPC/contract configuration placeholders. | **FIXED & VERIFIED IN PHASE 6** — Added `IDENTITY_HMAC_SECRET=`, `NEAR_NETWORK_ID`, `NEAR_CONTRACT_ID`, and `NEAR_RPC_URL` placeholders under the Server-Only section in [`.env.example`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/.env.example). |
+| **`SEC-AUDIT-03`** | **LOW** | `package-lock.json` (`npm audit`) | Transitive upstream advisories in `@grpc/grpc-js` (via `@firebase/firestore`), `@vitest/mocker`/`tinypool` (dev-only test runner), and `elliptic` (via `secp256k1` in `@near-js/crypto`; Fundora uses Ed25519 keys on NEAR and WebCrypto/Node `crypto` for SHA-256/HMAC-SHA256). | **DISCLOSED** — Remediating via `npm audit fix --force` would force breaking major version changes (`firebase@9.14.0`, `vitest@5.1.0`, `near-api-js@7.2.0`). None of the affected transitive code paths (`secp256k1` or dev-only `tinypool`) are exposed in production runtime workflows. |
+
+
 
 
 

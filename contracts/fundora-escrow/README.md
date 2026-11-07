@@ -86,3 +86,13 @@ cargo build --target wasm32-unknown-unknown --release
 
 5. **Rollback / Recovery Procedure:**
    - If a milestone payout or refund promise fails on-chain (`ProjectStatus::ReconciliationRequired`), verify the recipient account exists on NEAR Testnet and invoke `retry_failed_milestone_payout` or `retry_failed_refund` as a scoped `barangay_admin` or `system_admin`.
+
+6. **Linux CI / WSL2 `near-workspaces` Real Sandbox Verification Procedure:**
+   - Because `near-workspaces` (`0.14+` / `0.21+`) only distributes `near-sandbox` binaries for `linux-x86_64` and `macos-arm64`, the Windows test runner executes `20/20` unit tests in [`src/tests.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/src/tests.rs) plus `2/2` VM callback & WASM artifact integrity tests in [`tests/sandbox_integration.rs`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/contracts/fundora-escrow/tests/sandbox_integration.rs).
+   - To run a full `near-sandbox` local node test on Linux CI or WSL2 Ubuntu:
+     ```bash
+     # Inside WSL2 Ubuntu (x86_64) or Linux CI:
+     cd contracts/fundora-escrow
+     cargo build --target wasm32-unknown-unknown --release
+     cargo test -- --nocapture
+     ```
