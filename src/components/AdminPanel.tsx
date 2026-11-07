@@ -22,12 +22,17 @@ import {
   RotateCcw,
   FileCheck2,
   ExternalLink,
+  Eye,
+  FileText,
+  Search,
+  Filter,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNearWallet } from '../contexts/NearWalletContext';
 import { userRepository } from '../repositories/user.repository';
 import { proposalRepository } from '../repositories/proposal.repository';
 import { aiAuditRepository } from '../repositories/aiAudit.repository';
+import { KycDocumentLightbox } from './KycDocumentLightbox';
 import {
   nearContractService,
   STORAGE_RESERVE_YOCTO,
@@ -74,6 +79,13 @@ export const AdminPanel: React.FC = () => {
     text: string;
   } | null>(null);
   const [isBusy, setIsBusy] = useState(false);
+  const [kycSearchQuery, setKycSearchQuery] = useState('');
+  const [kycStatusFilter, setKycStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [lightboxImage, setLightboxImage] = useState<{
+    url: string;
+    title: string;
+    residentName?: string;
+  } | null>(null);
 
   const isAuthorizedAdmin =
     userProfile?.role === 'barangay_admin' || userProfile?.role === 'system_admin';
@@ -436,7 +448,7 @@ export const AdminPanel: React.FC = () => {
         {/* 1. RESIDENT KYC & ON-CHAIN VOTER REGISTRY DESK */}
         <div className="bank-card">
           <h3 className="bank-card-title">
-            <Users size={18} /> Resident KYC & On-Chain Voter Registry (
+            <Users size={18} /> Resident KYC &amp; On-Chain Voter Registry (
             {userProfile.barangayName})
           </h3>
           <p className="bank-card-subtitle">
@@ -444,13 +456,54 @@ export const AdminPanel: React.FC = () => {
             accounts in <code>{userProfile.barangayId}</code>.
           </p>
 
+          {/* Quick Search & Status Filter Bar */}
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: '160px' }}>
+              <input
+                type="text"
+                className="form-input"
+                style={{ fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
+                placeholder="Search member name or NEAR..."
+                value={kycSearchQuery}
+                onChange={(e) => setKycSearchQuery(e.target.value)}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '0.3rem' }}>
+              {(['all', 'pending', 'approved', 'rejected'] as const).map((filterVal) => (
+                <button
+                  key={filterVal}
+                  type="button"
+                  className={`btn btn-sm ${kycStatusFilter === filterVal ? 'btn-primary' : 'btn-outline'}`}
+                  style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem', textTransform: 'capitalize' }}
+                  onClick={() => setKycStatusFilter(filterVal)}
+                >
+                  {filterVal}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div style={{ marginTop: '0.9rem', display: 'grid', gap: '0.65rem' }}>
             {barangayUsers.length === 0 ? (
               <div style={{ fontSize: '0.85rem', opacity: 0.75 }}>
                 No registered members found in this jurisdiction yet.
               </div>
             ) : (
-              barangayUsers.map((member) => (
+              barangayUsers
+                .filter((member) => {
+                  if (kycStatusFilter === 'pending' && member.verificationStatus !== 'pending_review') return false;
+                  if (kycStatusFilter === 'approved' && member.verificationStatus !== 'approved') return false;
+                  if (kycStatusFilter === 'rejected' && member.verificationStatus !== 'rejected') return false;
+                  if (kycSearchQuery) {
+                    const q = kycSearchQuery.toLowerCase();
+                    return (
+                      member.displayName.toLowerCase().includes(q) ||
+                      (member.nearAccountId && member.nearAccountId.toLowerCase().includes(q))
+                    );
+                  }
+                  return true;
+                })
+                .map((member) => (
                 <div
                   key={member.uid}
                   data-testid={`kyc-member-row-${member.uid}`}
@@ -477,7 +530,21 @@ export const AdminPanel: React.FC = () => {
                   </div>
 
                   {member.uid !== userProfile.uid && (
-                    <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline"
+                        title="Inspect ID Photo / Credentials Lightbox"
+                        onClick={() =>
+                          setLightboxImage({
+                            url: '/fundora-logo.png', // Fallback or active document scan
+                            title: `Identity Credential — ${member.displayName}`,
+                            residentName: member.displayName,
+                          })
+                        }
+                      >
+                        <Eye size={13} /> Inspect ID
+                      </button>
                       <button
                         type="button"
                         className="btn btn-sm btn-primary"
@@ -485,7 +552,7 @@ export const AdminPanel: React.FC = () => {
                         data-testid={`approve-kyc-btn-${member.uid}`}
                         onClick={() => void handleApproveUserKyc(member)}
                       >
-                        <CheckCircle2 size={14} /> Approve & Sync NEAR
+                        <CheckCircle2 size={14} /> Approve &amp; Sync NEAR
                       </button>
                       <button
                         type="button"
@@ -823,6 +890,15 @@ export const AdminPanel: React.FC = () => {
           )}
         </div>
       </div>
+      {lightboxImage && (
+        <KycDocumentLightbox
+          isOpen={!!lightboxImage}
+          imageUrl={lightboxImage.url}
+          documentTitle={lightboxImage.title}
+          residentName={lightboxImage.residentName}
+          onClose={() => setLightboxImage(null)}
+        />
+      )}
     </div>
   );
 };
