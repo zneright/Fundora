@@ -119,9 +119,8 @@ export const MainLayout: React.FC = () => {
         <JudgeDemoToolbar />
         <header className="desktop-top-bar">
           <div className="top-bar-user-info">
-            <div className="top-bar-avatar">
-              {userProfile.firstName.charAt(0)}
-              {userProfile.lastName.charAt(0)}
+            <div className="bank-brand-crest" style={{ width: 38, height: 38, borderRadius: 10, overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src="/fundora-logo.png" alt="Fundora Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div>
               <div className="top-bar-title">

@@ -35,8 +35,8 @@ export const LandingView: React.FC<LandingViewProps> = ({
       {/* Top Navigation */}
       <header className="desktop-top-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div className="bank-brand-crest">
-            <ShieldCheck size={22} style={{ color: 'var(--role-accent)' }} />
+          <div className="bank-brand-crest" style={{ overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/fundora-logo.png" alt="Fundora Shield Crest" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <div>
             <div className="bank-brand-title">Fundora</div>
