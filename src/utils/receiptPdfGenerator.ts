@@ -1,18 +1,18 @@
 /**
  * Fundora — Transaction-Linked Digital Receipt Generator (`receiptPdfGenerator.ts`)
  *
- * Generates verifiable PDF digital receipts using `jsPDF` with QR code target URLs,
+ * Generates verifiable PDF digital receipts using dynamic `jsPDF` import with QR code target URLs,
  * SHA-256 payload integrity digests, and strict validation.
  *
  * Honesty & Legal Compliance Invariants (ADR-09):
- * 1. Receipts are labeled "Fundora Transaction-Linked Digital Receipt" (never claiming
+ * 1. Receipts are labeled "Fundora Digital Settlement Voucher — Non-Statutory Protocol Record" (never claiming
  *    unverified statutory BIR tax invoice or COA voucher accreditation).
  * 2. Simulated / Demo sandbox transactions are explicitly stamped as
  *    `SIMULATED / DEMO SANDBOX` and never misrepresented as live blockchain confirmations.
  * 3. Validates all required receipt fields before PDF generation.
  */
 
-import { jsPDF } from 'jspdf';
+import type { jsPDF } from 'jspdf';
 import { APP_CONFIG } from '../configuration/config';
 import { formatNear, formatPhp } from './currency';
 import { computeSha256Hex } from './normalization';
@@ -149,7 +149,7 @@ export function resolveReceiptVerificationMetadata(
       : `TRANSACTION STATUS: ${payload.verificationStatus}`;
 
   const complianceDisclaimer =
-    'Fundora Transaction-Linked Digital Receipt: Cryptographic ledger reference for community transparency. This document is an informational accountability record and is not a statutory BIR official tax invoice or COA government accounting voucher.';
+    'Fundora Digital Settlement Voucher — Non-Statutory Protocol Record: Cryptographic ledger reference for community transparency. This document is an informational accountability record and is not an official government voucher, not a statutory BIR official tax invoice, or COA government accounting document.';
 
   return {
     isValid: true,
@@ -194,7 +194,8 @@ export async function generateReceiptPdfDocument(
   const metadata = resolveReceiptVerificationMetadata(payload);
   const integritySha256 = await computeReceiptIntegrityHash(payload);
 
-  const doc = new jsPDF({
+  const { jsPDF: JsPdfCtor } = await import('jspdf');
+  const doc = new JsPdfCtor({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4',
@@ -202,7 +203,7 @@ export async function generateReceiptPdfDocument(
 
   // Header Banner
   doc.setFontSize(16);
-  doc.text('FUNDORA — TRANSACTION-LINKED DIGITAL RECEIPT', 15, 20);
+  doc.text('FUNDORA DIGITAL SETTLEMENT VOUCHER — NON-STATUTORY PROTOCOL RECORD', 15, 20);
 
   doc.setFontSize(10);
   doc.text(`Status: ${metadata.statusBannerText}`, 15, 28);
@@ -255,7 +256,7 @@ export async function generateReceiptPdfDocument(
   doc.text(splitDisclaimer, 15, 152);
 
   const summaryText = [
-    'FUNDORA — TRANSACTION-LINKED DIGITAL RECEIPT',
+    'FUNDORA DIGITAL SETTLEMENT VOUCHER — NON-STATUTORY PROTOCOL RECORD',
     metadata.statusBannerText,
     `Receipt: ${payload.receiptSerialNumber}`,
     `Project: ${payload.projectId} (${payload.projectTitle})`,

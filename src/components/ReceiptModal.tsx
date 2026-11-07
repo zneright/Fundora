@@ -32,7 +32,14 @@ export interface ReceiptModalProps {
 
 export const ReceiptModal: React.FC<ReceiptModalProps> = ({ receipt, onClose }) => {
   const [integrityHash, setIntegrityHash] = useState<string>('');
-  const [metadata, setMetadata] = useState<ValidatedReceiptMetadata | null>(null);
+  const [metadata, setMetadata] = useState<ValidatedReceiptMetadata | null>(() => {
+    if (!receipt) return null;
+    try {
+      return resolveReceiptVerificationMetadata(receipt);
+    } catch {
+      return null;
+    }
+  });
   const [validationError, setValidationError] = useState<string | null>(null);
   const [downloadStatus, setDownloadStatus] = useState<string | null>(null);
 
@@ -83,7 +90,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ receipt, onClose }) 
       className="modal-backdrop"
       role="dialog"
       aria-modal="true"
-      aria-label="Fundora Transaction-Linked Digital Receipt"
+      aria-label="Fundora Digital Settlement Voucher — Non-Statutory Protocol Record"
       data-testid="receipt-modal-dialog"
       style={{
         position: 'fixed',
@@ -123,10 +130,10 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ receipt, onClose }) 
         >
           <div>
             <h3 className="bank-card-title" style={{ fontSize: '1.15rem' }}>
-              <Receipt size={18} /> Fundora Transaction-Linked Digital Receipt
+              <Receipt size={18} /> Fundora Digital Settlement Voucher
             </h3>
             <p className="bank-card-subtitle">
-              Serial: <code data-testid="receipt-modal-serial">{receipt.receiptSerialNumber}</code> • Protocol Settlement Voucher (Non-Statutory)
+              Serial: <code data-testid="receipt-modal-serial">{receipt.receiptSerialNumber}</code> • Non-Statutory Protocol Record
             </p>
           </div>
           <button
@@ -332,7 +339,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ receipt, onClose }) 
                   data-testid="receipt-download-pdf-btn"
                   onClick={() => void handleDownloadPdf()}
                 >
-                  <Download size={15} /> Download PDF Digital Receipt
+                  <Download size={15} /> Download PDF Settlement Voucher
                 </button>
               </div>
             </div>

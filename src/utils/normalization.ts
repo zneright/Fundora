@@ -37,21 +37,33 @@ export function isValidPhMobile(raw: string): boolean {
   return /^09\d{9}$/.test(normalized);
 }
 
+export type SkSubRole =
+  | 'elected_chairperson'
+  | 'elected_kagawad'
+  | 'appointed_secretary'
+  | 'appointed_treasurer';
+
 /**
  * Calculates exact age in years as of a reference date and applies R.A. 10742
- * Sangguniang Kabataan Reform Act age-bracket routing:
+ * (as amended by R.A. 11768) Sangguniang Kabataan Reform Act age-bracket routing:
  * - `< 15`: `under_15_blocked` (Blocked from registration)
- * - `15 - 30`: `eligible_youth` (Full Katipunan ng Kabataan voting & SK eligibility)
+ * - `15 - 30`: `eligible_youth` (Full Katipunan ng Kabataan voting membership)
  * - `> 30`: `over_30_viewer` (Auto-provisioned as Public Transparency Viewer for residents;
  *   allowed for Barangay Admin / Official oversight roles)
+ *
+ * For SK Officials:
+ * - Elected (Chairperson, Kagawad): 18–24 years old on election day
+ * - Appointed (Secretary, Treasurer): 18–30 years old on appointment day
+ * - Minors (15–17): Ineligible for SK office (allowed only as resident voter)
  */
 export function evaluateRa10742AgeEligibility(
   birthDateIso: string,
   requestedRole: 'resident' | 'sk_official' | 'barangay_admin',
-  referenceDate: Date = new Date()
+  referenceDate: Date = new Date(),
+  skSubRole?: SkSubRole | string
 ): {
   ageYears: number;
-  ageBracketStatus: 'eligible_youth' | 'over_30_viewer' | 'under_15_blocked';
+  ageBracketStatus: 'eligible_youth' | 'over_30_viewer' | 'under_15_blocked' | 'ineligible_sk_age';
   effectiveRole: 'resident' | 'sk_official' | 'barangay_admin' | 'viewer';
   allowed: boolean;
   noticeMessage?: string;
@@ -84,29 +96,103 @@ export function evaluateRa10742AgeEligibility(
     };
   }
 
-  if (age > 30) {
-    if (requestedRole === 'barangay_admin') {
+  if (requestedRole === 'barangay_admin') {
+    if (age < 18) {
       return {
         ageYears: age,
-        ageBracketStatus: 'over_30_viewer',
+        ageBracketStatus: 'ineligible_sk_age',
         effectiveRole: 'barangay_admin',
-        allowed: true,
+        allowed: false,
+        noticeMessage: 'Barangay Administrators must be at least 18 years of age.',
+      };
+    }
+    return {
+      ageYears: age,
+      ageBracketStatus: age > 30 ? 'over_30_viewer' : 'eligible_youth',
+      effectiveRole: 'barangay_admin',
+      allowed: true,
+      noticeMessage:
+        age > 30
+          ? 'Barangay Admin jurisdiction oversight verified (senior LGU official bracket).'
+          : 'Barangay Admin jurisdiction oversight verified.',
+    };
+  }
+
+  if (requestedRole === 'sk_official') {
+    if (age < 18) {
+      return {
+        ageYears: age,
+        ageBracketStatus: 'ineligible_sk_age',
+        effectiveRole: 'resident',
+        allowed: false,
         noticeMessage:
-          'Barangay Admin jurisdiction oversight verified (senior LGU official bracket).',
+          'Under R.A. 10742 as amended by R.A. 11768, Sangguniang Kabataan officials must be at least 18 years old on assumption/election day. Minors aged 15–17 may participate as KK Youth voters.',
       };
     }
 
-    if (requestedRole === 'sk_official') {
+    if (age > 30) {
       return {
         ageYears: age,
         ageBracketStatus: 'over_30_viewer',
         effectiveRole: 'viewer',
         allowed: false,
         noticeMessage:
-          'Under R.A. 10742 Section 10, Sangguniang Kabataan (SK) Officials must be 15 to 30 years of age.',
+          'Under R.A. 10742 Section 10 as amended by R.A. 11768, Sangguniang Kabataan (SK) Officials must be between 18 and 30 years of age.',
       };
     }
 
+    if (skSubRole === 'elected_chairperson' || skSubRole === 'elected_kagawad') {
+      if (age > 24) {
+        return {
+          ageYears: age,
+          ageBracketStatus: 'ineligible_sk_age',
+          effectiveRole: 'viewer',
+          allowed: false,
+          noticeMessage:
+            'Under R.A. 10742 Section 10 as amended by R.A. 11768, elected SK Officials (Chairperson and Kagawad) must be between 18 and 24 years old on election day. Appointed officials (Secretary and Treasurer) may be up to 30 years old.',
+        };
+      }
+      return {
+        ageYears: age,
+        ageBracketStatus: 'eligible_youth',
+        effectiveRole: 'sk_official',
+        allowed: true,
+        noticeMessage: 'Eligible for elected SK office (ages 18–24).',
+      };
+    }
+
+    if (skSubRole === 'appointed_secretary' || skSubRole === 'appointed_treasurer') {
+      return {
+        ageYears: age,
+        ageBracketStatus: 'eligible_youth',
+        effectiveRole: 'sk_official',
+        allowed: true,
+        noticeMessage: 'Eligible for appointed SK office (ages 18–30).',
+      };
+    }
+
+    // Default if no sub-role specified yet
+    if (age > 24) {
+      return {
+        ageYears: age,
+        ageBracketStatus: 'eligible_youth',
+        effectiveRole: 'sk_official',
+        allowed: true,
+        noticeMessage:
+          'Eligible for appointed SK positions (Secretary/Treasurer, ages 18–30). Elected positions (Chairperson/Kagawad) require ages 18–24.',
+      };
+    }
+
+    return {
+      ageYears: age,
+      ageBracketStatus: 'eligible_youth',
+      effectiveRole: 'sk_official',
+      allowed: true,
+    };
+  }
+
+  // Resident
+  if (age > 30) {
     return {
       ageYears: age,
       ageBracketStatus: 'over_30_viewer',
@@ -120,7 +206,7 @@ export function evaluateRa10742AgeEligibility(
   return {
     ageYears: age,
     ageBracketStatus: 'eligible_youth',
-    effectiveRole: requestedRole,
+    effectiveRole: 'resident',
     allowed: true,
   };
 }

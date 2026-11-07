@@ -24,21 +24,31 @@ Local youth councils (**Sangguniang Kabataan / SK**, governed by Philippine Repu
    - Asynchronous cross-shard transfer safety (`PayoutInFlight`, `RefundInFlight`) with private callbacks (`on_transfer_complete`, `on_refund_complete`) and `ReconciliationRequired` recovery (`retry_failed_milestone_payout`, `retry_failed_refund`).
    - **Treasury-Only Refund Invariant:** Rejected or disputed project balances return strictly to `project.funder_treasury` (the Barangay Admin treasury account that funded the escrow)—never to `sk_official`.
 
-2. **Protected Server-Side AI Civic Auditor (`Gemini 2.5 Flash` + `auditor.fundora.testnet`):**
+2. **Protected Server-Side AI Civic Auditor (`Gemini 2.5 Flash` + `fundora-auditor-bestdish.testnet`):**
    - Executes strictly on the backend (`/api/ai/verify-identity`, `/api/ai/audit-proposal`, `/api/ai/audit-evidence`) so `GEMINI_API_KEY` and `NEAR_AUDITOR_PRIVATE_KEY` are never exposed to the browser.
    - Benchmarks proposal line items against DTI SRP reference prices, flags potential overpricing, and recommends **inter-agency LGU equipment borrowing** (e.g., borrowing tents, sound systems, or heavy equipment from the City/Municipal Engineering Office or CDRRMO at ₱0 rental cost).
    - Evaluates multimodal milestone evidence photos and official receipts, computes a canonical SHA-256 report digest, and records an on-chain attestation via `record_ai_attestation`.
    - **Strict Advisory-Only Trust Boundary:** AI scores and attestations never auto-approve KYC, never auto-create escrows, and never auto-release or refund funds. Human Barangay Admins and Verified Resident Quorums retain 100% financial and governance authority.
 
-3. **Guided 5-Step Registration, PSGC Geographic Engine & Privacy Architecture:**
-   - Preserves the complete 5-pill onboarding flow (`Account & Email` $\rightarrow$ `Role & LGU` $\rightarrow$ `Personal Identity` $\rightarrow$ `Residency & Term` $\rightarrow$ `Document Vault`), live PSGC geographic cascading (`psgc.cloud`) with NCR special-case handling and a bundled `3-second` offline static fallback (`psgcFallback.json`).
-   - Enforces **R.A. 10742** age-bracket routing (`<15` blocked, `15–30` eligible Youth Resident, `>30` routed to read-only Public Viewer), server-secret-keyed `HMAC-SHA256` duplicate identity detection, and selective KYC resubmission (`photo_only`, `details_only`, `full_package`, `custom`).
-   - Separates public/routing profiles (`users/{uid}`) from restricted PII (`registration_records/{uid}` and `uploaded_documents/{docId}`).
+3. **Guided 5-Step Registration, PSGC Geographic Engine & Statutory Age Routing:**
+   - Preserves the complete 5-pill onboarding flow (`Account & Email` $\rightarrow$ `Role & LGU` $\rightarrow$ `Personal Identity` $\rightarrow$ `Residency & Term` $\rightarrow$ `Document Vault`), live PSGC geographic cascading (`psgc.cloud` / PSA API) with NCR special-case handling and a bundled `3-second` offline static fallback (`psgcFallback.json`).
+   - Enforces **R.A. 10742 (as amended by R.A. 11768)** age-bracket routing:
+     - **Katipunan ng Kabataan (KK) Youth Voters:** Ages 15–30.
+     - **Elected SK Officials (Chairperson & Kagawad):** Ages 18–24 on election day.
+     - **Appointed SK Officials (Secretary & Treasurer):** Ages 18–30 on appointment day.
+     - **Minors (<18):** Ineligible to hold SK office.
+     - **Residents >30:** Auto-provisioned as verified Public Transparency Viewers (`viewer`).
+   - Server-secret-keyed `HMAC-SHA256` duplicate identity detection and selective KYC resubmission (`photo_only`, `details_only`, `full_package`, `custom`).
+   - Strictly separates public/routing profiles (`users/{uid}`) from restricted PII (`registration_records/{uid}` and `uploaded_documents/{docId}`).
 
-4. **Public Transparency Hub, Digital Receipts & Isolated Judge Demo Mode:**
+4. **Public Transparency Hub, Digital Settlement Vouchers & Isolated Judge Demo Mode:**
    - Unauthenticated **Public Transparency Hub** clearly distinguishes **1. NEAR Contract Escrow & Quorum State** from **2. Off-Chain Proposal Metadata & AI Attestations** while sanitizing all resident PII.
-   - **Transaction-Linked Digital Receipts** (`ReceiptModal.tsx` and `receiptPdfGenerator.ts` via `jsPDF` + `qrcode.react`) with SHA-256 document integrity digests, NearBlocks Testnet QR links, and explicit `CONFIRMED` vs. `SIMULATED` badges.
+   - **Transaction-Linked Digital Settlement Vouchers** (`ReceiptModal.tsx` and `receiptPdfGenerator.ts` via dynamic `jsPDF` + `qrcode.react`) with SHA-256 document integrity digests, NearBlocks Testnet QR links, and explicit `CONFIRMED` vs. `SIMULATED` badges.
    - **1-Click Isolated Judge Demo Mode** scoped strictly to `Brgy. San Antonio (Demo)` (`brgy_demo_001`, PSGC `1374030250`) with 5 switchable personas and clean restoration of the real user session on exit.
+
+5. **Barangay Bond Minimal Civic UI Architecture (29 Frames):**
+   - Implements the complete 29-frame redesign inspired by the clean, white, restrained interface of Barangay Bond.
+   - Clean tables, functional form controls, responsive desktop/mobile layouts, and official Fundora shield logo branding. Zero dark navy fintech themes, zero nested card clutter, and zero glassmorphic gradients.
 
 ---
 
@@ -154,8 +164,8 @@ VITE_FIREBASE_APP_ID=
 
 # Public NEAR Protocol Testnet Configuration
 VITE_NEAR_NETWORK_ID=testnet
-VITE_NEAR_CONTRACT_ID=contract.fundora.testnet
-VITE_NEAR_AUDITOR_ID=auditor.fundora.testnet
+VITE_NEAR_CONTRACT_ID=fundora-contract-bestdish.testnet
+VITE_NEAR_AUDITOR_ID=fundora-auditor-bestdish.testnet
 VITE_NEAR_RPC_URL=https://rpc.testnet.near.org
 VITE_NEAR_EXPLORER_URL=https://testnet.nearblocks.io
 
@@ -163,9 +173,9 @@ VITE_NEAR_EXPLORER_URL=https://testnet.nearblocks.io
 GEMINI_API_KEY=
 IDENTITY_HMAC_SECRET=
 NEAR_NETWORK_ID=testnet
-NEAR_CONTRACT_ID=contract.fundora.testnet
+NEAR_CONTRACT_ID=fundora-contract-bestdish.testnet
 NEAR_RPC_URL=https://rpc.testnet.near.org
-NEAR_AUDITOR_ACCOUNT_ID=auditor.fundora.testnet
+NEAR_AUDITOR_ACCOUNT_ID=fundora-auditor-bestdish.testnet
 NEAR_AUDITOR_PRIVATE_KEY=
 FIREBASE_SERVICE_ACCOUNT_JSON=
 ```

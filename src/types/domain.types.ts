@@ -120,7 +120,11 @@ export interface UserProfile {
   regionName: string;
   zipCode: string;
   ageYears: number;
-  ageBracketStatus: 'eligible_youth' | 'over_30_viewer' | 'under_15_blocked';
+  ageBracketStatus:
+    | 'eligible_youth'
+    | 'over_30_viewer'
+    | 'under_15_blocked'
+    | 'ineligible_sk_age';
   verificationStatus: VerificationStatus;
   nearAccountId?: string;
   resubmissionTarget?: ResubmissionTarget;
@@ -398,6 +402,11 @@ export interface RegistrationWizardState {
   lastName: string;
   suffix: string;
   birthDate: string;
+  skSubRole?:
+    | 'elected_chairperson'
+    | 'elected_kagawad'
+    | 'appointed_secretary'
+    | 'appointed_treasurer';
   sex: 'Male' | 'Female' | 'Prefer not to say';
   civilStatus: 'Single' | 'Married' | 'Widowed' | 'Separated';
   mobileNumber: string;

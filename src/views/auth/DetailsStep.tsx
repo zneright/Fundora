@@ -26,7 +26,7 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({
   const [stepError, setStepError] = useState('');
 
   const ageCheck = wizard.birthDate
-    ? evaluateRa10742AgeEligibility(wizard.birthDate, wizard.selectedRole)
+    ? evaluateRa10742AgeEligibility(wizard.birthDate, wizard.selectedRole, new Date(), wizard.skSubRole)
     : null;
 
   const handleContinue = (e: React.FormEvent) => {
@@ -35,6 +35,10 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({
 
     if (!wizard.firstName.trim() || !wizard.lastName.trim()) {
       setStepError('Please enter your legal First Name and Last Name as shown on your government ID.');
+      return;
+    }
+    if (wizard.selectedRole === 'sk_official' && !wizard.skSubRole) {
+      setStepError('Please select your SK Official Position / Sub-Role (Elected vs Appointed).');
       return;
     }
     if (!wizard.birthDate) {
@@ -155,6 +159,34 @@ export const DetailsStep: React.FC<DetailsStepProps> = ({
           />
         </div>
       </div>
+
+      {wizard.selectedRole === 'sk_official' && (
+        <div className="form-group">
+          <label htmlFor="id-sk-subrole">
+            SK Official Position / Sub-Role (R.A. 10742 / R.A. 11768)
+          </label>
+          <select
+            id="id-sk-subrole"
+            className="select-control"
+            value={wizard.skSubRole || ''}
+            onChange={(e) =>
+              onUpdateWizard({
+                skSubRole: e.target.value as RegistrationWizardState['skSubRole'],
+              })
+            }
+            required
+          >
+            <option value="">-- Select Official SK Mandate --</option>
+            <option value="elected_chairperson">Elected: SK Chairperson (Ages 18–24 on election day)</option>
+            <option value="elected_kagawad">Elected: SK Member / Kagawad (Ages 18–24 on election day)</option>
+            <option value="appointed_secretary">Appointed: SK Secretary (Ages 18–30 on appointment day)</option>
+            <option value="appointed_treasurer">Appointed: SK Treasurer (Ages 18–30 on appointment day)</option>
+          </select>
+          <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+            Statutory rule: Elected officials must be 18–24; appointed Secretary &amp; Treasurer may serve up to age 30.
+          </span>
+        </div>
+      )}
 
       <div className="grid-2-equal">
         <div className="form-group">

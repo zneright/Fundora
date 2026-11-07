@@ -428,6 +428,121 @@ export const LandingView: React.FC<LandingViewProps> = ({
             </table>
           </div>
         </div>
+
+        {/* Legal Requirements vs Fundora Application Rules */}
+        <div
+          style={{
+            marginTop: '2rem',
+            marginBottom: '2rem',
+            border: '1px solid #e5e7eb',
+            borderRadius: 12,
+            padding: '1.5rem',
+            background: '#ffffff',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+            <ShieldCheck size={20} color="#059669" />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', margin: 0 }}>
+              Statutory Framework &amp; Fundora System Rules
+            </h3>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', fontSize: '0.82rem' }}>
+            <div style={{ padding: '1rem', background: '#f9fafb', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+              <div style={{ fontWeight: 700, color: '#1f2937', marginBottom: '0.35rem' }}>
+                Philippine Statutory Requirements
+              </div>
+              <ul style={{ paddingLeft: '1.1rem', margin: 0, color: '#4b5563', lineHeight: 1.6 }}>
+                <li><strong>R.A. 10742 (amended by R.A. 11768):</strong> Katipunan ng Kabataan (KK) voters must be ages 15–30 residing in the barangay for at least 6 months.</li>
+                <li><strong>SK Officials:</strong> Must be at least 18 years old. Elected officials (Chairperson/Kagawad) must be ages 18–24 on election day; appointed officials (Secretary/Treasurer) may be up to 30.</li>
+                <li><strong>R.A. 7160 (Local Government Code):</strong> Local government units hold primary executive custody over public funds.</li>
+                <li><strong>R.A. 8792 (E-Commerce Act):</strong> Electronic signatures and cryptographic hashes hold legal standing for digital audit records.</li>
+              </ul>
+            </div>
+            <div style={{ padding: '1rem', background: '#f9fafb', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+              <div style={{ fontWeight: 700, color: '#1f2937', marginBottom: '0.35rem' }}>
+                Fundora Application &amp; Contract Rules
+              </div>
+              <ul style={{ paddingLeft: '1.1rem', margin: 0, color: '#4b5563', lineHeight: 1.6 }}>
+                <li><strong>40% / 40% / 20% Schedule:</strong> Fundora's smart contract disbursement rule for stage-gate release, not a statutory mandate.</li>
+                <li><strong>Barangay Admin Invite Code:</strong> Fundora protocol access control preventing unauthorized administrator account claims.</li>
+                <li><strong>Automatic Viewer Role:</strong> Fundora routing rule granting residents over 30 verified inspection access to all civic ledgers.</li>
+                <li><strong>Advisory AI Audit:</strong> Gemini AI provides algorithmic DTI benchmark comparisons; final approval rests strictly with community vote.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Searchable / Interactive FAQ Accordion */}
+        <div
+          style={{
+            border: '1px solid #e5e7eb',
+            borderRadius: 12,
+            padding: '1.5rem',
+            background: '#ffffff',
+            marginBottom: '2rem',
+          }}
+        >
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', marginBottom: '0.85rem' }}>
+            Frequently Asked Questions
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            <details style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.75rem 1rem', background: '#f9fafb' }}>
+              <summary style={{ fontWeight: 600, color: '#111827', cursor: 'pointer', outline: 'none' }}>
+                Do youth residents pay gas fees when casting votes?
+              </summary>
+              <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: '#4b5563', lineHeight: 1.5 }}>
+                No. Fundora provisions a limited Function-Call session key with a 0.25 NEAR allowance and 0 yoctoNEAR deposit limit. Transactions are sponsored for the youth voter so they can participate without acquiring cryptocurrency.
+              </div>
+            </details>
+            <details style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.75rem 1rem', background: '#f9fafb' }}>
+              <summary style={{ fontWeight: 600, color: '#111827', cursor: 'pointer', outline: 'none' }}>
+                How does the 60% voting quorum operate?
+              </summary>
+              <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: '#4b5563', lineHeight: 1.5 }}>
+                A milestone release requires at least 60% affirmative votes among cast votes, subject to an on-chain floor of at least 3 verified votes in production (1 vote in sandbox mode). Escrow cannot be drained by low turnout or collusion.
+              </div>
+            </details>
+            <details style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.75rem 1rem', background: '#f9fafb' }}>
+              <summary style={{ fontWeight: 600, color: '#111827', cursor: 'pointer', outline: 'none' }}>
+                Can AI independently release or confiscate escrow funds?
+              </summary>
+              <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: '#4b5563', lineHeight: 1.5 }}>
+                No. Gemini AI is strictly advisory. It cross-checks unit prices against the DTI Suggested Retail Price database and flags potential anomalies. Only verified community members and smart contract voting logic can trigger fund disbursements.
+              </div>
+            </details>
+            <details style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.75rem 1rem', background: '#f9fafb' }}>
+              <summary style={{ fontWeight: 600, color: '#111827', cursor: 'pointer', outline: 'none' }}>
+                Where are project files and receipts stored?
+              </summary>
+              <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: '#4b5563', lineHeight: 1.5 }}>
+                Evidence documents and vouchers are stored in secured Google Cloud Storage buckets, with cryptographic SHA-256 digests permanently anchored on the NEAR blockchain to ensure tamper resistance.
+              </div>
+            </details>
+          </div>
+        </div>
+
+        {/* Institutional Footer */}
+        <footer
+          style={{
+            borderTop: '1px solid #e5e7eb',
+            paddingTop: '1.5rem',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontSize: '0.78rem',
+            color: '#6b7280',
+            gap: '1rem',
+          }}
+        >
+          <div>
+            <strong>Fundora Civic Treasury Protocol</strong> &bull; Open-source civic infrastructure deployed on NEAR Protocol Testnet. Not an official agency portal.
+          </div>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <span style={{ fontFamily: 'monospace' }}>Contract: fundora-contract-bestdish.testnet</span>
+            <span>Storage Reserve: 0.05 NEAR</span>
+          </div>
+        </footer>
       </main>
     </div>
   );

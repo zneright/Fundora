@@ -206,8 +206,13 @@ export const authService = {
     registrationRecord: RegistrationRecordDocument;
     verificationRecord: VerificationRecordDocument;
   }> {
-    // 1. Validate R.A. 10742 Age Eligibility
-    const ageResult = evaluateRa10742AgeEligibility(wizard.birthDate, wizard.selectedRole);
+    // 1. Validate R.A. 10742 Age Eligibility (including R.A. 11768 SK Sub-Role bounds)
+    const ageResult = evaluateRa10742AgeEligibility(
+      wizard.birthDate,
+      wizard.selectedRole,
+      new Date(),
+      wizard.skSubRole
+    );
     if (!ageResult.allowed) {
       throw new Error(ageResult.noticeMessage || 'Age eligibility check failed under R.A. 10742.');
     }

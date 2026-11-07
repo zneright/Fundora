@@ -431,6 +431,148 @@ export const YouthDashboard: React.FC = () => {
                               </div>
                             )}
 
+                            {/* Frame 20: 3-Stage Consensus & Payout Visualizer */}
+                            <div
+                              style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+                                gap: '6px',
+                                padding: '6px 8px',
+                                background: 'var(--bg-hover)',
+                                borderRadius: '6px',
+                                border: '1px solid var(--border-primary)',
+                                fontSize: '0.73rem',
+                                margin: '2px 0 6px 0',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  color:
+                                    approvePct >= chainProj.quorum_bps / 100 &&
+                                    totalVotes >= chainProj.min_votes
+                                      ? 'var(--accent-green)'
+                                      : 'var(--text-muted)',
+                                  fontWeight:
+                                    approvePct >= chainProj.quorum_bps / 100 &&
+                                    totalVotes >= chainProj.min_votes
+                                      ? 700
+                                      : 500,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    width: 16,
+                                    height: 16,
+                                    borderRadius: '50%',
+                                    background:
+                                      approvePct >= chainProj.quorum_bps / 100 &&
+                                      totalVotes >= chainProj.min_votes
+                                        ? 'var(--accent-green)'
+                                        : 'var(--border-primary)',
+                                    color: '#ffffff',
+                                    fontSize: '10px',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                  }}
+                                >
+                                  1
+                                </span>
+                                <span>Quorum Met ({approvePct}%)</span>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  color:
+                                    m.status === 'PayoutInFlight' || m.status === 'Completed'
+                                      ? 'var(--accent-blue)'
+                                      : 'var(--text-muted)',
+                                  fontWeight:
+                                    m.status === 'PayoutInFlight' || m.status === 'Completed'
+                                      ? 700
+                                      : 500,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    width: 16,
+                                    height: 16,
+                                    borderRadius: '50%',
+                                    background:
+                                      m.status === 'PayoutInFlight' || m.status === 'Completed'
+                                        ? 'var(--accent-blue)'
+                                        : 'var(--border-primary)',
+                                    color: '#ffffff',
+                                    fontSize: '10px',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                  }}
+                                >
+                                  2
+                                </span>
+                                <span>Payout In-Flight</span>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  color:
+                                    m.status === 'Completed'
+                                      ? 'var(--accent-green)'
+                                      : m.status === 'Failed' || m.status === 'ReconciliationRequired'
+                                        ? 'var(--accent-danger)'
+                                        : 'var(--text-muted)',
+                                  fontWeight:
+                                    m.status === 'Completed' ||
+                                    m.status === 'Failed' ||
+                                    m.status === 'ReconciliationRequired'
+                                      ? 700
+                                      : 500,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    width: 16,
+                                    height: 16,
+                                    borderRadius: '50%',
+                                    background:
+                                      m.status === 'Completed'
+                                        ? 'var(--accent-green)'
+                                        : m.status === 'Failed' ||
+                                            m.status === 'ReconciliationRequired'
+                                          ? 'var(--accent-danger)'
+                                          : 'var(--border-primary)',
+                                    color: '#ffffff',
+                                    fontSize: '10px',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: 700,
+                                  }}
+                                >
+                                  3
+                                </span>
+                                <span>
+                                  {m.status === 'Completed'
+                                    ? 'NEAR Finalized'
+                                    : m.status === 'Failed' || m.status === 'ReconciliationRequired'
+                                      ? 'Reconciliation'
+                                      : 'Finalized on NEAR'}
+                                </span>
+                              </div>
+                            </div>
+
                             <div
                               style={{
                                 display: 'flex',

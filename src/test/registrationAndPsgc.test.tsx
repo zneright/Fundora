@@ -62,6 +62,30 @@ describe('Phase 1 — Normalization & R.A. 10742 Youth Age-Bracket Routing', () 
     const seniorBrgyAdmin = evaluateRa10742AgeEligibility('1981-01-10', 'barangay_admin', refDate);
     expect(seniorBrgyAdmin.allowed).toBe(true);
     expect(seniorBrgyAdmin.effectiveRole).toBe('barangay_admin');
+
+    // SK Official minor (16) -> blocked (SK officials must be >= 18)
+    const minorSk = evaluateRa10742AgeEligibility('2010-06-01', 'sk_official', refDate);
+    expect(minorSk.allowed).toBe(false);
+    expect(minorSk.ageBracketStatus).toBe('ineligible_sk_age');
+
+    // Elected SK Chairperson (age 21) -> allowed
+    const electedChair = evaluateRa10742AgeEligibility('2005-03-15', 'sk_official', refDate, 'elected_chairperson');
+    expect(electedChair.allowed).toBe(true);
+    expect(electedChair.effectiveRole).toBe('sk_official');
+
+    // Elected SK Kagawad (age 26) -> blocked (> 24 on election day)
+    const electedOverAge = evaluateRa10742AgeEligibility('2000-05-10', 'sk_official', refDate, 'elected_kagawad');
+    expect(electedOverAge.allowed).toBe(false);
+    expect(electedOverAge.ageBracketStatus).toBe('ineligible_sk_age');
+
+    // Appointed SK Treasurer (age 26) -> allowed (18–30)
+    const appointedTreas = evaluateRa10742AgeEligibility('2000-05-10', 'sk_official', refDate, 'appointed_treasurer');
+    expect(appointedTreas.allowed).toBe(true);
+    expect(appointedTreas.effectiveRole).toBe('sk_official');
+
+    // Appointed SK Secretary (age 32) -> blocked (> 30)
+    const appointedOverAge = evaluateRa10742AgeEligibility('1994-05-10', 'sk_official', refDate, 'appointed_secretary');
+    expect(appointedOverAge.allowed).toBe(false);
   });
 });
 

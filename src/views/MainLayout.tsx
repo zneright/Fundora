@@ -356,7 +356,7 @@ export const MainLayout: React.FC = () => {
                         onChange={(e) => setEnableFnCallKey(e.target.checked)}
                       />
                       <span>
-                        Enable 0 NEAR Function-Call session key for voting &amp; proof uploads
+                        Enable 0 yoctoNEAR Deposit Function-Call session key (0.25 NEAR gas allowance) for voting &amp; proofs
                       </span>
                     </label>
                   </div>
@@ -599,6 +599,42 @@ export const MainLayout: React.FC = () => {
             </div>
           )}
         </main>
+
+        {/* Frame 29: Mobile Sticky Bottom Tab Bar */}
+        <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
+          <button
+            type="button"
+            className={`mobile-bottom-nav-item ${activeTab === 'workspace' ? 'active' : ''}`}
+            onClick={() => setActiveTab('workspace')}
+          >
+            <LayoutDashboard size={18} />
+            <span>Workspace</span>
+          </button>
+          <button
+            type="button"
+            className={`mobile-bottom-nav-item ${activeTab === 'transparency' ? 'active' : ''}`}
+            onClick={() => setActiveTab('transparency')}
+          >
+            <Globe size={18} />
+            <span>Ledger</span>
+          </button>
+          <button
+            type="button"
+            className={`mobile-bottom-nav-item ${activeTab === 'activity' ? 'active' : ''}`}
+            onClick={() => setActiveTab('activity')}
+          >
+            <Activity size={18} />
+            <span>Activity</span>
+          </button>
+          <button
+            type="button"
+            className={`mobile-bottom-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+            onClick={() => setActiveTab('profile')}
+          >
+            <UserCheck size={18} />
+            <span>Profile</span>
+          </button>
+        </nav>
       </div>
     </div>
   );
