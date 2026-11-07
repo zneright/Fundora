@@ -210,28 +210,29 @@ export const MainLayout: React.FC = () => {
               <div
                 data-testid="near-wallet-selector-bar"
                 style={{
-                  background: 'rgba(15, 23, 42, 0.35)',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '0.75rem',
-                  border: '1px solid rgba(255,255,255,0.14)',
-                  minWidth: '300px',
+                  background: 'var(--bg-hover)',
+                  padding: '0.85rem 1rem',
+                  borderRadius: '8px',
+                  border: '1px solid var(--border-primary)',
+                  minWidth: '320px',
                 }}
               >
                 <div
                   style={{
-                    fontSize: '0.78rem',
-                    fontWeight: 600,
-                    marginBottom: '0.45rem',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    marginBottom: '0.5rem',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.4rem',
+                    color: 'var(--text-primary)',
                   }}
                 >
-                  <Wallet size={14} /> NEAR Wallet Selector (Non-Custodial)
+                  <Wallet size={14} style={{ color: 'var(--accent-green)' }} /> NEAR Wallet Selector (Non-Custodial)
                 </div>
 
                 {isConnected && activeAccountId ? (
-                  <div style={{ display: 'grid', gap: '0.45rem', fontSize: '0.8rem' }}>
+                  <div style={{ display: 'grid', gap: '0.5rem', fontSize: '0.8rem' }}>
                     <div
                       style={{
                         display: 'flex',
@@ -242,7 +243,7 @@ export const MainLayout: React.FC = () => {
                     >
                       <span>
                         Connected:{' '}
-                        <code data-testid="connected-near-account">{activeAccountId}</code> (
+                        <code data-testid="connected-near-account" style={{ fontWeight: 600 }}>{activeAccountId}</code> (
                         {selectedWalletId})
                       </span>
                       <button
@@ -302,11 +303,11 @@ export const MainLayout: React.FC = () => {
                     )}
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gap: '0.45rem' }}>
+                  <div style={{ display: 'grid', gap: '0.5rem' }}>
                     <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                       <select
-                        className="form-input"
-                        style={{ width: 'auto', fontSize: '0.78rem', padding: '0.3rem 0.5rem' }}
+                        className="form-control"
+                        style={{ width: 'auto', fontSize: '0.8rem', padding: '0.35rem 0.6rem', height: 'auto' }}
                         data-testid="wallet-provider-select"
                         value={walletProviderInput}
                         onChange={(e) =>
@@ -323,8 +324,8 @@ export const MainLayout: React.FC = () => {
                       </select>
                       <input
                         type="text"
-                        className="form-input"
-                        style={{ flex: 1, minWidth: '165px', fontSize: '0.78rem', padding: '0.3rem 0.5rem' }}
+                        className="form-control"
+                        style={{ flex: 1, minWidth: '165px', fontSize: '0.8rem', padding: '0.35rem 0.6rem', height: 'auto' }}
                         data-testid="wallet-account-input"
                         placeholder={defaultSuggestedAccount}
                         value={walletAccountInput}
@@ -346,6 +347,7 @@ export const MainLayout: React.FC = () => {
                         gap: '0.4rem',
                         fontSize: '0.74rem',
                         cursor: 'pointer',
+                        color: 'var(--text-secondary)',
                       }}
                     >
                       <input
@@ -367,7 +369,8 @@ export const MainLayout: React.FC = () => {
                     style={{
                       marginTop: '0.4rem',
                       fontSize: '0.76rem',
-                      color: '#fca5a5',
+                      color: 'var(--accent-danger)',
+                      fontWeight: 600,
                     }}
                   >
                     {walletError || networkMismatchError}
@@ -444,12 +447,12 @@ export const MainLayout: React.FC = () => {
             aria-label="Civic Workspace Navigation"
             style={{
               display: 'flex',
-              gap: '0.5rem',
-              marginBottom: '1.25rem',
+              gap: '0.4rem',
+              marginBottom: '1.5rem',
               flexWrap: 'wrap',
               padding: '0.35rem',
-              background: 'var(--bg-elevated)',
-              borderRadius: '16px',
+              background: 'var(--bg-hover)',
+              borderRadius: '8px',
               border: '1px solid var(--border-primary)',
             }}
           >
@@ -459,10 +462,12 @@ export const MainLayout: React.FC = () => {
                 activeTab === 'workspace' ? 'btn-primary' : 'btn-outline'
               }`}
               style={{
-                borderRadius: '12px',
+                borderRadius: '6px',
                 fontWeight: 600,
-                padding: '0.55rem 0.95rem',
-                transition: 'all 0.18s ease',
+                padding: '0.5rem 0.95rem',
+                border: activeTab === 'workspace' ? '1px solid var(--primary)' : '1px solid transparent',
+                background: activeTab === 'workspace' ? 'var(--primary)' : 'transparent',
+                color: activeTab === 'workspace' ? '#ffffff' : 'var(--text-secondary)',
               }}
               data-testid="nav-tab-workspace"
               onClick={() => setActiveTab('workspace')}
@@ -475,10 +480,12 @@ export const MainLayout: React.FC = () => {
                 activeTab === 'transparency' ? 'btn-primary' : 'btn-outline'
               }`}
               style={{
-                borderRadius: '12px',
+                borderRadius: '6px',
                 fontWeight: 600,
-                padding: '0.55rem 0.95rem',
-                transition: 'all 0.18s ease',
+                padding: '0.5rem 0.95rem',
+                border: activeTab === 'transparency' ? '1px solid var(--primary)' : '1px solid transparent',
+                background: activeTab === 'transparency' ? 'var(--primary)' : 'transparent',
+                color: activeTab === 'transparency' ? '#ffffff' : 'var(--text-secondary)',
               }}
               data-testid="nav-tab-transparency"
               onClick={() => setActiveTab('transparency')}
@@ -491,10 +498,12 @@ export const MainLayout: React.FC = () => {
                 activeTab === 'activity' ? 'btn-primary' : 'btn-outline'
               }`}
               style={{
-                borderRadius: '12px',
+                borderRadius: '6px',
                 fontWeight: 600,
-                padding: '0.55rem 0.95rem',
-                transition: 'all 0.18s ease',
+                padding: '0.5rem 0.95rem',
+                border: activeTab === 'activity' ? '1px solid var(--primary)' : '1px solid transparent',
+                background: activeTab === 'activity' ? 'var(--primary)' : 'transparent',
+                color: activeTab === 'activity' ? '#ffffff' : 'var(--text-secondary)',
               }}
               data-testid="nav-tab-activity"
               onClick={() => setActiveTab('activity')}
@@ -512,10 +521,12 @@ export const MainLayout: React.FC = () => {
                 activeTab === 'profile' ? 'btn-primary' : 'btn-outline'
               }`}
               style={{
-                borderRadius: '12px',
+                borderRadius: '6px',
                 fontWeight: 600,
-                padding: '0.55rem 0.95rem',
-                transition: 'all 0.18s ease',
+                padding: '0.5rem 0.95rem',
+                border: activeTab === 'profile' ? '1px solid var(--primary)' : '1px solid transparent',
+                background: activeTab === 'profile' ? 'var(--primary)' : 'transparent',
+                color: activeTab === 'profile' ? '#ffffff' : 'var(--text-secondary)',
               }}
               data-testid="nav-tab-profile"
               onClick={() => setActiveTab('profile')}

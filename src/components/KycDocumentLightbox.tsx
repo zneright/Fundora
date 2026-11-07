@@ -74,8 +74,8 @@ export const KycDocumentLightbox: React.FC<KycDocumentLightboxProps> = ({
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        background: 'rgba(3, 7, 18, 0.94)',
-        backdropFilter: 'blur(12px)',
+        background: 'rgba(17, 24, 39, 0.75)',
+        backdropFilter: 'blur(4px)',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -87,9 +87,9 @@ export const KycDocumentLightbox: React.FC<KycDocumentLightboxProps> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0.85rem 1.5rem',
-          background: 'rgba(15, 23, 42, 0.85)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
-          color: '#ffffff',
+          background: 'var(--bg-surface)',
+          borderBottom: '1px solid var(--border-primary)',
+          color: 'var(--text-primary)',
           flexWrap: 'wrap',
           gap: '0.75rem',
         }}
@@ -97,7 +97,7 @@ export const KycDocumentLightbox: React.FC<KycDocumentLightboxProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           <FileText size={18} style={{ color: 'var(--accent-green)' }} />
           <div>
-            <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>{documentTitle}</div>
+            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)' }}>{documentTitle}</div>
             {residentName && (
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                 Resident: <strong>{residentName}</strong>
@@ -176,7 +176,6 @@ export const KycDocumentLightbox: React.FC<KycDocumentLightboxProps> = ({
           cursor: zoomLevel > 1 ? 'grab' : 'default',
         }}
         onClick={(e) => {
-          // If clicked on backdrop, close
           if (e.target === e.currentTarget) {
             onClose();
           }
@@ -191,10 +190,11 @@ export const KycDocumentLightbox: React.FC<KycDocumentLightboxProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.75)',
-            borderRadius: isFullscreen ? 0 : 12,
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
+            borderRadius: isFullscreen ? 0 : 8,
             overflow: 'hidden',
-            background: '#0a0f1d',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-primary)',
           }}
         >
           <img
@@ -215,8 +215,8 @@ export const KycDocumentLightbox: React.FC<KycDocumentLightboxProps> = ({
       <div
         style={{
           padding: '0.5rem 1.5rem',
-          background: 'rgba(15, 23, 42, 0.9)',
-          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'var(--bg-surface)',
+          borderTop: '1px solid var(--border-primary)',
           fontSize: '0.75rem',
           color: 'var(--text-muted)',
           display: 'flex',

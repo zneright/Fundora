@@ -117,8 +117,9 @@ export const JudgeDemoToolbar: React.FC<JudgeDemoToolbarProps> = ({
         data-testid="judge-demo-launcher-bar"
         style={{
           padding: '0.6rem 1.25rem',
-          background: 'rgba(59, 130, 246, 0.12)',
-          borderBottom: '1px solid rgba(59, 130, 246, 0.3)',
+          background: '#eff6ff',
+          borderBottom: '1px solid #dbeafe',
+          color: '#1e40af',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -155,8 +156,9 @@ export const JudgeDemoToolbar: React.FC<JudgeDemoToolbarProps> = ({
       data-testid="judge-demo-active-toolbar"
       style={{
         padding: '0.75rem 1.25rem',
-        background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.22), rgba(59, 130, 246, 0.22))',
-        borderBottom: '2px solid #f59e0b',
+        background: '#fffbeb',
+        borderBottom: '1px solid #fde68a',
+        color: '#92400e',
         display: 'grid',
         gap: '0.55rem',
       }}

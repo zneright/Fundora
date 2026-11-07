@@ -88,7 +88,8 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ receipt, onClose }) 
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(2, 6, 23, 0.78)',
+        background: 'rgba(17, 24, 39, 0.65)',
+        backdropFilter: 'blur(4px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -104,7 +105,11 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ receipt, onClose }) 
           maxHeight: '90vh',
           overflowY: 'auto',
           position: 'relative',
-          padding: '1.5rem',
+          padding: '1.75rem',
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border-primary)',
+          borderRadius: 12,
+          boxShadow: 'var(--shadow-floating)',
         }}
       >
         <div

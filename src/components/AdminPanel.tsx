@@ -426,8 +426,16 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
+  const pendingKycCount = barangayUsers.filter(
+    (u) => u.verificationStatus === 'pending_review'
+  ).length;
+  const activeResidentsCount = barangayUsers.filter(
+    (u) => u.role === 'resident' && u.verificationStatus === 'approved'
+  ).length;
+  const skOfficialsCount = barangayUsers.filter((u) => u.role === 'sk_official').length;
+
   return (
-    <div className="workspace-section" data-testid="admin-panel-workspace">
+    <div className="workspace-section page-enter" data-testid="admin-panel-workspace">
       {statusMessage && (
         <div
           className={`alert-banner alert-${statusMessage.type}`}
@@ -435,14 +443,72 @@ export const AdminPanel: React.FC = () => {
           data-testid="admin-status-banner"
           style={{
             padding: '0.85rem 1rem',
-            borderRadius: '0.75rem',
+            borderRadius: '8px',
             marginBottom: '1rem',
-            border: '1px solid var(--border-subtle)',
+            border: '1px solid var(--border-primary)',
           }}
         >
           <strong>{statusMessage.type.toUpperCase()}:</strong> {statusMessage.text}
         </div>
       )}
+
+      {/* 4-KPI Metric Strip */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+          gap: '0.85rem',
+          marginBottom: '1.25rem',
+        }}
+      >
+        <div className="stat-tile" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: '8px', padding: '1rem' }}>
+          <div className="stat-tile-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+            Pending Audits
+          </div>
+          <div className="stat-tile-value" style={{ fontSize: '1.6rem', fontWeight: 900, color: pendingKycCount > 0 ? 'var(--accent-yellow)' : 'var(--text-primary)', marginTop: '0.2rem' }}>
+            {pendingKycCount}
+          </div>
+          <div className="stat-tile-sub" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            Awaiting ID review
+          </div>
+        </div>
+
+        <div className="stat-tile" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: '8px', padding: '1rem' }}>
+          <div className="stat-tile-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+            Active Residents
+          </div>
+          <div className="stat-tile-value" style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--accent-green)', marginTop: '0.2rem' }}>
+            {activeResidentsCount}
+          </div>
+          <div className="stat-tile-sub" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            Verified on NEAR Testnet
+          </div>
+        </div>
+
+        <div className="stat-tile" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: '8px', padding: '1rem' }}>
+          <div className="stat-tile-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+            SK Officials
+          </div>
+          <div className="stat-tile-value" style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--accent-blue)', marginTop: '0.2rem' }}>
+            {skOfficialsCount}
+          </div>
+          <div className="stat-tile-sub" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            Authorized proposers
+          </div>
+        </div>
+
+        <div className="stat-tile" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-primary)', borderRadius: '8px', padding: '1rem' }}>
+          <div className="stat-tile-label" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
+            Jurisdiction LGU
+          </div>
+          <div className="stat-tile-value" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.35rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            Brgy. {userProfile.barangayName}
+          </div>
+          <div className="stat-tile-sub" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+            PSGC: {userProfile.psgcCode}
+          </div>
+        </div>
+      </div>
 
       <div className="grid-2-equal" style={{ marginBottom: '1.25rem' }}>
         {/* 1. RESIDENT KYC & ON-CHAIN VOTER REGISTRY DESK */}

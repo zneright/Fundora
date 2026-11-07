@@ -11,7 +11,6 @@
 
 import React, { useState } from 'react';
 import { ShieldCheck, AlertTriangle } from 'lucide-react';
-import { InteractiveCanvasBackground } from '../../components/InteractiveCanvasBackground';
 import { LoginStep } from './LoginStep';
 import { VerifyEmailView } from './VerifyEmailView';
 import { RoleLGUStep } from './RoleLGUStep';
@@ -194,32 +193,29 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   return (
     <div
       className="banking-app-container page-enter"
-      style={{ maxWidth: 700, paddingTop: '2.5rem', paddingBottom: '3.5rem', position: 'relative' }}
+      style={{ maxWidth: 720, margin: '0 auto', paddingTop: '2rem', paddingBottom: '3.5rem' }}
     >
-      <InteractiveCanvasBackground />
       <div
         className="bank-card"
         style={{
-          position: 'relative',
-          zIndex: 10,
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-primary)',
-          borderRadius: 24,
-          boxShadow: '0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 214, 101, 0.08)',
-          backdropFilter: 'blur(16px)',
+          borderRadius: 12,
+          boxShadow: 'var(--shadow-sm)',
+          padding: '2rem',
         }}
       >
         {/* Brand Header */}
-        <div className="bank-card-header" style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1.25rem', marginBottom: '1.25rem' }}>
+        <div style={{ borderBottom: '1px solid var(--border-primary)', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div className="bank-brand-crest" style={{ width: 44, height: 44, borderRadius: 12, overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent' }}>
-              <img src="/fundora-logo.png" alt="Fundora Shield Crest" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <div style={{ width: 42, height: 42, borderRadius: 8, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)', border: '1px solid var(--border-primary)' }}>
+              <img src="/fundora-logo.png" alt="Fundora Crest" style={{ width: '85%', height: '85%', objectFit: 'contain' }} />
             </div>
             <div>
-              <h1 className="bank-card-title" style={{ fontSize: '1.25rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
                 Fundora Civic Treasury
               </h1>
-              <p className="bank-card-subtitle" style={{ fontSize: '0.82rem' }}>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>
                 NEAR-Native Programmable Escrow &amp; R.A. 10742 Verified LGU Onboarding
               </p>
             </div>
@@ -231,10 +227,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({
           <div
             style={{
               padding: '0.85rem 1rem',
-              borderRadius: 14,
-              background: 'rgba(245, 158, 11, 0.12)',
-              border: '1px solid rgba(245, 158, 11, 0.35)',
-              marginBottom: '1.15rem',
+              borderRadius: 8,
+              background: '#fef3c7',
+              border: '1px solid #fde68a',
+              marginBottom: '1.25rem',
               display: 'flex',
               flexDirection: 'column',
               gap: '0.3rem',
@@ -245,9 +241,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '0.84rem',
-                color: '#fbbf24',
+                color: '#b45309',
               }}
             >
               <AlertTriangle size={16} />
@@ -255,7 +251,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                 Selective Resubmission Mode: {resubPermissions.target.toUpperCase()}
               </span>
             </div>
-            <p className="text-secondary-sm">
+            <p style={{ margin: 0, fontSize: '0.8rem', color: '#92400e' }}>
               {activeProfile.rejectionReason ||
                 'Please update the unlocked fields or documents requested by your Barangay reviewer.'}
             </p>

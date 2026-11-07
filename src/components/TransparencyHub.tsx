@@ -290,35 +290,31 @@ export const TransparencyHub: React.FC<TransparencyHubProps> = ({
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
             gap: '0.65rem',
-            padding: '0.85rem',
-            borderRadius: 14,
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-primary)',
           }}
         >
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+          <div className="stat-tile" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-primary)', borderRadius: '8px', padding: '0.85rem 1rem' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
               Initiatives Indexed
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 900 }}>{publicProjects.length} Projects</div>
-            <div style={{ fontSize: '0.72rem', opacity: 0.75 }}>Filtered jurisdiction</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: '0.2rem' }}>{publicProjects.length} Projects</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Filtered jurisdiction</div>
           </div>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+          <div className="stat-tile" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-primary)', borderRadius: '8px', padding: '0.85rem 1rem' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
               Total Budget Committed
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-blue)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-blue)', marginTop: '0.2rem' }}>
               {formatNear(publicProjects.reduce((acc, p) => acc + (Number(p.totalBudgetNear) || 0), 0))}
             </div>
-            <div style={{ fontSize: '0.72rem', opacity: 0.75 }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
               Approx. {formatPhp(publicProjects.reduce((acc, p) => acc + (p.totalBudgetPhp || 0), 0))}
             </div>
           </div>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+          <div className="stat-tile" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-primary)', borderRadius: '8px', padding: '0.85rem 1rem' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
               Settled Tranches
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-green)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-green)', marginTop: '0.2rem' }}>
               {formatNear(
                 publicProjects.reduce((acc, p) => {
                   const cp = p.onChainProject;
@@ -326,13 +322,13 @@ export const TransparencyHub: React.FC<TransparencyHubProps> = ({
                 }, 0)
               )}
             </div>
-            <div style={{ fontSize: '0.72rem', opacity: 0.75 }}>Disbursed via 60% Quorum</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Disbursed via 60% Quorum</div>
           </div>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+          <div className="stat-tile" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-primary)', borderRadius: '8px', padding: '0.85rem 1rem' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
               Active Escrow
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-yellow)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-yellow)', marginTop: '0.2rem' }}>
               {formatNear(
                 publicProjects.reduce((acc, p) => {
                   const cp = p.onChainProject;
@@ -340,7 +336,7 @@ export const TransparencyHub: React.FC<TransparencyHubProps> = ({
                 }, 0)
               )}
             </div>
-            <div style={{ fontSize: '0.72rem', opacity: 0.75 }}>Locked in Smart Contract</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>Locked in Smart Contract</div>
           </div>
         </div>
       </div>

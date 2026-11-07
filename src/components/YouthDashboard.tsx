@@ -185,8 +185,24 @@ export const YouthDashboard: React.FC = () => {
     }
   };
 
+  const [activeFilterTab, setActiveFilterTab] = useState<'all' | 'voting' | 'execution' | 'completed'>('all');
+
+  const filteredProposals = proposals.filter((prop) => {
+    const chainProj = onChainProjects[prop.id];
+    if (activeFilterTab === 'voting') {
+      return chainProj?.milestones?.some((m) => m.status === 'SubmittedForVote');
+    }
+    if (activeFilterTab === 'execution') {
+      return chainProj?.status === 'Active';
+    }
+    if (activeFilterTab === 'completed') {
+      return chainProj?.status === 'Completed';
+    }
+    return true;
+  });
+
   return (
-    <div className="workspace-section" data-testid="youth-dashboard-workspace">
+    <div className="workspace-section page-enter" data-testid="youth-dashboard-workspace">
       {statusMessage && (
         <div
           className={`alert-banner alert-${statusMessage.type}`}
@@ -194,9 +210,9 @@ export const YouthDashboard: React.FC = () => {
           data-testid="youth-status-banner"
           style={{
             padding: '0.85rem 1rem',
-            borderRadius: '0.75rem',
+            borderRadius: '8px',
             marginBottom: '1rem',
-            border: '1px solid var(--border-subtle)',
+            border: '1px solid var(--border-primary)',
           }}
         >
           <strong>{statusMessage.type.toUpperCase()}:</strong> {statusMessage.text}
@@ -204,7 +220,7 @@ export const YouthDashboard: React.FC = () => {
       )}
 
       {/* Eligibility & Voter Status Banner */}
-      <div className="bank-card" style={{ marginBottom: '1.25rem' }}>
+      <div className="bank-card" style={{ marginBottom: '1.25rem', padding: '1.25rem 1.5rem' }}>
         <div
           style={{
             display: 'flex',
@@ -215,18 +231,18 @@ export const YouthDashboard: React.FC = () => {
           }}
         >
           <div>
-            <h3 className="bank-card-title">
+            <h3 className="bank-card-title" style={{ fontSize: '1.1rem', fontWeight: 800 }}>
               {isViewerOnly ? (
                 <>
                   <Eye size={18} /> Public Transparency & Oversight Mode (Over-30 Viewer)
                 </>
               ) : (
                 <>
-                  <ShieldCheck size={18} /> Sangguniang Kabataan Youth Voter Assembly (15–30)
+                  <ShieldCheck size={18} style={{ color: 'var(--accent-green)' }} /> Sangguniang Kabataan Youth Voter Assembly (15–30)
                 </>
               )}
             </h3>
-            <p className="bank-card-subtitle">
+            <p className="bank-card-subtitle" style={{ fontSize: '0.82rem', marginTop: '2px' }}>
               Jurisdiction: <strong>Brgy. {userProfile.barangayName}</strong> (
               <code>{userProfile.barangayId}</code>) • 1-Resident-1-Vote On-Chain Quorum
             </p>
@@ -251,6 +267,23 @@ export const YouthDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Category Filter Pills */}
+      <div className="fintech-tabs-rail" style={{ marginBottom: '1.25rem' }}>
+        {(['all', 'voting', 'execution', 'completed'] as const).map((tabKey) => (
+          <button
+            key={tabKey}
+            type="button"
+            className={`fintech-tab-btn ${activeFilterTab === tabKey ? 'active' : ''}`}
+            onClick={() => setActiveFilterTab(tabKey)}
+          >
+            {tabKey === 'all' && 'All Initiatives'}
+            {tabKey === 'voting' && 'Active Quorum Votes'}
+            {tabKey === 'execution' && 'In Execution'}
+            {tabKey === 'completed' && 'Completed'}
+          </button>
+        ))}
+      </div>
+
       {/* Barangay Projects & Milestone Quorum Voting Cards */}
       <div className="bank-card">
         <h3 className="bank-card-title">
@@ -262,12 +295,12 @@ export const YouthDashboard: React.FC = () => {
         </p>
 
         <div style={{ marginTop: '1rem', display: 'grid', gap: '1rem' }}>
-          {Object.values(onChainProjects).length === 0 && proposals.length === 0 ? (
-            <div style={{ fontSize: '0.86rem', opacity: 0.75 }}>
-              No community projects found in Brgy. {userProfile.barangayName} yet.
+          {filteredProposals.length === 0 ? (
+            <div style={{ fontSize: '0.86rem', opacity: 0.75, padding: '1rem 0' }}>
+              No community projects match the selected filter in Brgy. {userProfile.barangayName}.
             </div>
           ) : (
-            proposals.map((prop) => {
+            filteredProposals.map((prop) => {
               const chainProj = onChainProjects[prop.id];
               const attestations = attestationsByProject[prop.id] || [];
 
@@ -420,17 +453,17 @@ export const YouthDashboard: React.FC = () => {
                                   </span>
                                 </div>
 
-                                {/* Visual Dual-Color Quorum Progress Bar */}
+                                {/* Visual Dual-Color Quorum Progress Bar with 60% Marker */}
                                 <div
                                   style={{
                                     height: '8px',
                                     borderRadius: '9999px',
-                                    background: 'var(--bg-elevated)',
+                                    background: 'var(--bg-hover)',
                                     overflow: 'hidden',
                                     display: 'flex',
                                     position: 'relative',
                                     marginBottom: '0.65rem',
-                                    border: '1px solid var(--border-subtle)',
+                                    border: '1px solid var(--border-primary)',
                                   }}
                                 >
                                   <div
@@ -448,6 +481,19 @@ export const YouthDashboard: React.FC = () => {
                                       transition: 'width 0.3s ease',
                                     }}
                                     title={`Reject: ${m.votes_reject}`}
+                                  />
+                                  {/* 60% Quorum Threshold Line Marker */}
+                                  <div
+                                    style={{
+                                      position: 'absolute',
+                                      top: 0,
+                                      bottom: 0,
+                                      left: '60%',
+                                      width: '2px',
+                                      background: '#d97706',
+                                      zIndex: 2,
+                                    }}
+                                    title="60% Quorum Threshold Target"
                                   />
                                 </div>
                               </div>

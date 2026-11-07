@@ -456,8 +456,8 @@ export const SKWorkspace: React.FC = () => {
               gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
               gap: '0.65rem',
               padding: '0.85rem',
-              borderRadius: 14,
-              background: 'var(--bg-elevated)',
+              borderRadius: 8,
+              background: 'var(--bg-hover)',
               border: '1px solid var(--border-primary)',
             }}
           >
@@ -468,7 +468,7 @@ export const SKWorkspace: React.FC = () => {
               <div style={{ fontWeight: 800, color: 'var(--accent-green)', fontSize: '0.95rem' }}>
                 {formatPhp(itemQty * itemUnitPricePhp * 0.4)}
               </div>
-              <div style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                 ≈ {formatNear(phpToNear(itemQty * itemUnitPricePhp * 0.4, APP_CONFIG.near.phpPerNearRate))}
               </div>
             </div>
@@ -479,7 +479,7 @@ export const SKWorkspace: React.FC = () => {
               <div style={{ fontWeight: 800, color: 'var(--accent-blue)', fontSize: '0.95rem' }}>
                 {formatPhp(itemQty * itemUnitPricePhp * 0.4)}
               </div>
-              <div style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                 ≈ {formatNear(phpToNear(itemQty * itemUnitPricePhp * 0.4, APP_CONFIG.near.phpPerNearRate))}
               </div>
             </div>
@@ -490,7 +490,7 @@ export const SKWorkspace: React.FC = () => {
               <div style={{ fontWeight: 800, color: 'var(--accent-yellow)', fontSize: '0.95rem' }}>
                 {formatPhp(itemQty * itemUnitPricePhp * 0.2)}
               </div>
-              <div style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
                 ≈ {formatNear(phpToNear(itemQty * itemUnitPricePhp * 0.2, APP_CONFIG.near.phpPerNearRate))}
               </div>
             </div>

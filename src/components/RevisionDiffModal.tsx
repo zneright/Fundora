@@ -32,8 +32,8 @@ export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({ proposal, 
         position: 'fixed',
         inset: 0,
         zIndex: 9999,
-        background: 'rgba(3, 7, 18, 0.88)',
-        backdropFilter: 'blur(8px)',
+        background: 'rgba(17, 24, 39, 0.65)',
+        backdropFilter: 'blur(4px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -53,7 +53,8 @@ export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({ proposal, 
           overflow: 'hidden',
           background: 'var(--bg-surface)',
           border: '1px solid var(--border-primary)',
-          borderRadius: 20,
+          borderRadius: 12,
+          boxShadow: 'var(--shadow-floating)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -61,11 +62,11 @@ export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({ proposal, 
         <div
           style={{
             padding: '1.15rem 1.5rem',
-            borderBottom: '1px solid var(--border-subtle)',
+            borderBottom: '1px solid var(--border-primary)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            background: 'var(--bg-elevated)',
+            background: 'var(--bg-surface)',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
@@ -73,8 +74,8 @@ export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({ proposal, 
               style={{
                 width: 36,
                 height: 36,
-                borderRadius: 10,
-                background: 'rgba(2, 132, 199, 0.15)',
+                borderRadius: 8,
+                background: 'var(--accent-blue-soft)',
                 color: 'var(--accent-blue)',
                 display: 'flex',
                 alignItems: 'center',
@@ -84,7 +85,7 @@ export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({ proposal, 
               <GitCompare size={18} />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 Proposal Milestone Allocation &amp; Audit Scope
               </h3>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
@@ -109,8 +110,8 @@ export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({ proposal, 
           <div
             style={{
               padding: '1rem',
-              borderRadius: 14,
-              background: 'var(--bg-elevated)',
+              borderRadius: 8,
+              background: 'var(--bg-hover)',
               border: '1px solid var(--border-primary)',
               display: 'flex',
               justifyContent: 'space-between',
@@ -120,7 +121,7 @@ export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({ proposal, 
             }}
           >
             <div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
                 Total Allocated Escrow
               </div>
               <div style={{ fontSize: '1.45rem', fontWeight: 900, color: 'var(--accent-green)' }}>
@@ -132,7 +133,7 @@ export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({ proposal, 
             </div>
 
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
                 Governance Status
               </div>
               <span className="badge badge-info" style={{ marginTop: '0.25rem' }}>
