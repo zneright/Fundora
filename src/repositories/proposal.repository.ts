@@ -24,6 +24,11 @@ export const proposalRepository = {
     return dbGetById<ProposalDocument>('proposals', proposalId);
   },
 
+  async listAll(): Promise<ProposalDocument[]> {
+    const list = await dbListCollection<ProposalDocument>('proposals');
+    return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  },
+
   async listByBarangay(barangayId: string): Promise<ProposalDocument[]> {
     const list = await dbListCollection<ProposalDocument>('proposals', [
       { field: 'barangayId', op: '==', value: barangayId },

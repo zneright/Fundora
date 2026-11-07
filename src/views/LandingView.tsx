@@ -1,17 +1,32 @@
 import React from 'react';
-import { ShieldCheck, Sparkles, Lock, Landmark, ArrowRight, Sun, Moon } from 'lucide-react';
+import {
+  ShieldCheck,
+  Sparkles,
+  Lock,
+  Landmark,
+  ArrowRight,
+  Sun,
+  Moon,
+  Globe,
+} from 'lucide-react';
 import { NetworkBadge } from '../components/NetworkBadge';
+import { JudgeDemoToolbar } from '../components/JudgeDemoToolbar';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface LandingViewProps {
   onLaunchOnboarding: () => void;
+  onOpenTransparencyHub?: () => void;
 }
 
-export const LandingView: React.FC<LandingViewProps> = ({ onLaunchOnboarding }) => {
+export const LandingView: React.FC<LandingViewProps> = ({
+  onLaunchOnboarding,
+  onOpenTransparencyHub,
+}) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
     <div style={{ minHeight: '100dvh', position: 'relative', overflow: 'hidden' }}>
+      <JudgeDemoToolbar />
       <div className="aurora-glow-container">
         <div className="aurora-glow-orb aurora-orb-1" />
         <div className="aurora-glow-orb aurora-orb-2" />
@@ -82,11 +97,22 @@ export const LandingView: React.FC<LandingViewProps> = ({ onLaunchOnboarding }) 
             Prices and governed by verified youth voters.
           </p>
 
-          <div className="civic-card-action-bar">
+          <div className="civic-card-action-bar" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <button type="button" className="btn btn-primary btn-lg" onClick={onLaunchOnboarding}>
               <span>Register or Sign In to Barangay Vault</span>
               <ArrowRight size={18} />
             </button>
+            {onOpenTransparencyHub && (
+              <button
+                type="button"
+                className="btn btn-outline btn-lg"
+                data-testid="landing-open-transparency-btn"
+                onClick={onOpenTransparencyHub}
+              >
+                <Globe size={18} />
+                <span>Explore Public Transparency Hub</span>
+              </button>
+            )}
           </div>
         </div>
 

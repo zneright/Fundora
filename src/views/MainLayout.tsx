@@ -14,6 +14,7 @@ import {
   UserCheck,
   KeyRound,
   AlertTriangle,
+  Globe,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -23,6 +24,8 @@ import { AdminPanel } from '../components/AdminPanel';
 import { SKWorkspace } from '../components/SKWorkspace';
 import { YouthDashboard } from '../components/YouthDashboard';
 import { ActivityView } from '../components/ActivityView';
+import { TransparencyHub } from '../components/TransparencyHub';
+import { JudgeDemoToolbar } from '../components/JudgeDemoToolbar';
 import type { SupportedWalletProviderId } from '../services/nearContract.service';
 import { AuthPage } from './auth/AuthPage';
 
@@ -47,9 +50,9 @@ export const MainLayout: React.FC = () => {
   } = useNearWallet();
 
   const [editingResubmission, setEditingResubmission] = useState(false);
-  const [activeTab, setActiveTab] = useState<'workspace' | 'activity' | 'profile'>(
-    'workspace'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'workspace' | 'transparency' | 'activity' | 'profile'
+  >('workspace');
   const [walletProviderInput, setWalletProviderInput] =
     useState<SupportedWalletProviderId>('my-near-wallet');
   const [walletAccountInput, setWalletAccountInput] = useState('');
@@ -113,6 +116,7 @@ export const MainLayout: React.FC = () => {
   return (
     <div className={`desktop-bank-shell ${roleThemeClass}`}>
       <div className="bank-main-viewport">
+        <JudgeDemoToolbar />
         <header className="desktop-top-bar">
           <div className="top-bar-user-info">
             <div className="top-bar-avatar">
@@ -454,6 +458,16 @@ export const MainLayout: React.FC = () => {
             <button
               type="button"
               className={`btn btn-sm ${
+                activeTab === 'transparency' ? 'btn-primary' : 'btn-outline'
+              }`}
+              data-testid="nav-tab-transparency"
+              onClick={() => setActiveTab('transparency')}
+            >
+              <Globe size={15} /> Public Transparency Hub
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${
                 activeTab === 'activity' ? 'btn-primary' : 'btn-outline'
               }`}
               data-testid="nav-tab-activity"
@@ -480,6 +494,9 @@ export const MainLayout: React.FC = () => {
 
           {/* 4. ACTIVE TAB VIEWPORT */}
           {activeTab === 'workspace' && renderPrimaryRoleWorkspace()}
+          {activeTab === 'transparency' && (
+            <TransparencyHub defaultBarangayId={userProfile.barangayId} />
+          )}
           {activeTab === 'activity' && <ActivityView />}
           {activeTab === 'profile' && (
             <div className="grid-2-equal" data-testid="profile-kyc-vault-view">
