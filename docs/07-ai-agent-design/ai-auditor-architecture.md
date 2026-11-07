@@ -107,3 +107,15 @@ When `/api/ai/audit-proposal` or `/api/ai/audit-evidence` completes:
 3. **Rate Limiting & Auth Verification:** Every `/api/ai/*` request requires a valid Firebase Auth ID token and enforces per-UID rate limits (max 5 audits per 10 minutes) to prevent API quota exhaustion.
 4. **Deterministic Fallback Mode:** If the Gemini API times out or returns a `503/429` error during a live demo, the backend logs the error, executes a deterministic rule-based heuristic evaluator (checking math totals, upfront percentage bounds, and DTI reference lookup table), and explicitly marks the audit record with `evaluationMode: "deterministic_fallback"` so the user workflow never deadlocks.
 
+---
+
+## 5. Phase 3 Implementation & Verification Summary
+
+- **Implemented Backend Modules (`api/`):**
+  - [`api/ai/verify-identity.ts`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/api/ai/verify-identity.ts) — Multimodal OCR rubric (`idNumberMatch`, `imageQualityScore`, `nameMatch`, `barangayMatch`, `documentAuthenticity`, `overallScore`), privacy-preserving SHA-256 duplicate detection (`idNumberHash`, `mobileHash`, `nameBirthdateHash`), OCR typo correction suggestions (`fieldSuggestions`), and selective-resubmission workflow compatibility.
+  - [`api/ai/audit-proposal.ts`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/api/ai/audit-proposal.ts) — DTI SRP & DBM-PS Common-Use Supplies benchmarking with traceable source citations and dates ([`api/_lib/dtiSrpCatalog.ts`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/api/_lib/dtiSrpCatalog.ts)), LGU inter-agency borrowing detection (`CDRRMO/BFP`, `Barangay Hall/City GSO`, `DepEd`, `DENR-CENRO`, `DICT`), milestone tranche proportionality checks (`40/40/20` and `40/30/30`), and canonical SHA-256 report attestation on NEAR.
+  - [`api/ai/audit-evidence.ts`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/api/ai/audit-evidence.ts) — Deliverable verification against `requiredProofs`, Official Receipt (OR) consistency & legibility verification, duplicate/synthetic image detection, plain-language `summaryForVoters`, and explicit resident quorum governance boundary (`humanQuorumBindingNotice`).
+  - [`api/_lib/security.ts`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/api/_lib/security.ts) — Canonical JSON serialization (`canonicalizeJson`, `computeCanonicalReportSha256`), Bearer token authentication & barangay/role RBAC (`authenticateAndAuthorizeRequest`), prompt-injection sanitization (`detectPromptInjection`, `wrapUntrustedXml`), upload MIME/size/base64 validation (`validateUploadedImages`), per-UID sliding-window rate limiting (`enforceRateLimit`), and PII/secret log redaction (`redactSensitiveMetadata`).
+  - [`api/_lib/nearAttestationSigner.ts`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/api/_lib/nearAttestationSigner.ts) — Server-side `auditor.fundora.testnet` signer invoking `record_ai_attestation(project_id, target_type, milestone_idx, report_sha256_hash, score, recommendation)` with explicit `RECORDED_ONCHAIN`, `PENDING_RETRY`, and `FAILED` status handling.
+
+

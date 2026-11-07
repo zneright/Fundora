@@ -78,7 +78,7 @@ This Decision Log records all foundational product, security, blockchain, AI, da
   - *Running AI inside a TEE / Shade Agent:* High infrastructure complexity for a 7-day deadline; a server-side signing agent (`auditor.fundora.testnet`) with SHA-256 report hashing provides verifiable provenance today and can be upgraded to a TEE worker post-MVP.
 - **Source Evidence:** [`src/services/gemini.ts`](file:///C:/Users/Renz%20Jericho%20Buday/barangay-bond/src/services/gemini.ts#L217), [`src/services/aiProposalAdvisor.service.ts`](file:///C:/Users/Renz%20Jericho%20Buday/barangay-bond/src/services/aiProposalAdvisor.service.ts#L55).
 - **Consequences:** Secures API credentials, prevents score tampering, and anchors AI audit integrity on the NEAR blockchain while keeping human admins and residents as the final authority.
-- **Approval Status:** `Approved — Authorized for Implementation (Nov 7, 2026)`
+- **Approval Status:** `Implemented & Verified in Phase 3 (Nov 7, 2026)`
 
 ---
 
