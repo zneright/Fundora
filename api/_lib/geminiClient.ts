@@ -4,7 +4,7 @@
  * Enforces strict timeout, JSON schema validation, and explicit fallback signaling.
  */
 
-export const GEMINI_MODEL_ID = 'gemini-2.5-flash';
+export const GEMINI_MODEL_ID = process.env.GEMINI_MODEL_ID || 'gemini-2.5-flash-lite';
 export const DEFAULT_GEMINI_TIMEOUT_MS = 10_000;
 
 export interface GeminiCallRequest {
