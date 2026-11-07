@@ -17,6 +17,9 @@ import {
   AlertTriangle,
   CheckCircle2,
   FolderKanban,
+  GitCompare,
+  FileSpreadsheet,
+  Coins,
 } from 'lucide-react';
 import { APP_CONFIG } from '../configuration/config';
 import { useAuth } from '../contexts/AuthContext';
@@ -33,6 +36,8 @@ import {
 import type { ProposalDocument, ProposalLineItem, ProposalMilestone } from '../types';
 import { formatNear, formatPhp, nearToYocto, phpToNear, yoctoToNear } from '../utils/currency';
 import { computeSha256Hex } from '../utils/normalization';
+import { ImageCarousel } from './ImageCarousel';
+import { RevisionDiffModal } from './RevisionDiffModal';
 
 export const SKWorkspace: React.FC = () => {
   const { userProfile } = useAuth();
@@ -63,6 +68,7 @@ export const SKWorkspace: React.FC = () => {
   const [evidenceInputByProject, setEvidenceInputByProject] = useState<
     Record<string, string>
   >({});
+  const [diffModalProposal, setDiffModalProposal] = useState<ProposalDocument | null>(null);
   const [statusMessage, setStatusMessage] = useState<{
     type: 'success' | 'error' | 'warning';
     text: string;
@@ -443,7 +449,54 @@ export const SKWorkspace: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* Automatic 40 / 40 / 20 Tranche Preview */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gap: '0.65rem',
+              padding: '0.85rem',
+              borderRadius: 14,
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-primary)',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                Tranche 1: Mobilization (40%)
+              </div>
+              <div style={{ fontWeight: 800, color: 'var(--accent-green)', fontSize: '0.95rem' }}>
+                {formatPhp(itemQty * itemUnitPricePhp * 0.4)}
+              </div>
+              <div style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+                ≈ {formatNear(phpToNear(itemQty * itemUnitPricePhp * 0.4, APP_CONFIG.near.phpPerNearRate))}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                Tranche 2: Progress Delivery (40%)
+              </div>
+              <div style={{ fontWeight: 800, color: 'var(--accent-blue)', fontSize: '0.95rem' }}>
+                {formatPhp(itemQty * itemUnitPricePhp * 0.4)}
+              </div>
+              <div style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+                ≈ {formatNear(phpToNear(itemQty * itemUnitPricePhp * 0.4, APP_CONFIG.near.phpPerNearRate))}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700 }}>
+                Tranche 3: Retention (20%)
+              </div>
+              <div style={{ fontWeight: 800, color: 'var(--accent-yellow)', fontSize: '0.95rem' }}>
+                {formatPhp(itemQty * itemUnitPricePhp * 0.2)}
+              </div>
+              <div style={{ fontSize: '0.72rem', opacity: 0.8 }}>
+                ≈ {formatNear(phpToNear(itemQty * itemUnitPricePhp * 0.2, APP_CONFIG.near.phpPerNearRate))}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
             <span style={{ fontSize: '0.83rem', opacity: 0.85 }}>
               Estimated Total: <strong>{formatPhp(itemQty * itemUnitPricePhp)}</strong> (≈{' '}
               <strong>
@@ -511,7 +564,15 @@ export const SKWorkspace: React.FC = () => {
                         {formatPhp(prop.totalBudgetPhp)})
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline"
+                        title="View Milestone Allocation Breakdown & Diff"
+                        onClick={() => setDiffModalProposal(prop)}
+                      >
+                        <GitCompare size={13} /> View 40/40/20 Tranches &amp; BOQ
+                      </button>
                       <span className="badge badge-role">{prop.status}</span>
                       {chainProj && (
                         <span className="badge badge-success">
@@ -634,6 +695,12 @@ export const SKWorkspace: React.FC = () => {
           )}
         </div>
       </div>
+      {diffModalProposal && (
+        <RevisionDiffModal
+          proposal={diffModalProposal}
+          onClose={() => setDiffModalProposal(null)}
+        />
+      )}
     </div>
   );
 };
