@@ -2,7 +2,7 @@
  * Fundora — Backend Security, Auth, Rate Limiting, Prompt-Injection Defense & Hashing
  */
 
-import { createHash } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 import type {
   AuthenticatedCallerContext,
   UploadedImageInput,
@@ -81,8 +81,43 @@ export function computeCanonicalReportSha256(reportPayload: unknown): string {
 }
 
 // ============================================================================
-// 2. Privacy-Preserving Identifier Normalization & Hashing
+// 2. Privacy-Preserving Identifier Normalization & Server-Keyed HMAC-SHA256
 // ============================================================================
+//
+// SECURITY NOTE (RISK-12 Remediation):
+// Plain unsalted SHA-256 over predictable, low-entropy personal identifiers
+// (such as 11-digit Philippine mobile numbers `09XXXXXXXXX`, structured government IDs,
+// or `name + birthdate` combinations) is vulnerable to offline rainbow-table and
+// brute-force enumeration if the duplicate-detection index is ever exposed.
+//
+// All personal identifier duplicate hashes therefore use server-secret-keyed
+// HMAC-SHA256 (`IDENTITY_HMAC_SECRET` environment variable). In local/test
+// environments where `IDENTITY_HMAC_SECRET` is unset, a deterministic test/dev
+// fallback key is used and `isIdentityHmacSecretConfigured()` returns `false`
+// so deployment checks and audit logs flag the missing production secret.
+
+const DEV_FALLBACK_HMAC_KEY =
+  'fundora-dev-only-ephemeral-identity-hmac-key-replace-in-prod';
+
+export function isIdentityHmacSecretConfigured(): boolean {
+  const configured = process.env.IDENTITY_HMAC_SECRET?.trim();
+  return Boolean(configured && configured.length >= 32);
+}
+
+function getIdentityHmacKey(): string {
+  const configured = process.env.IDENTITY_HMAC_SECRET?.trim();
+  if (configured && configured.length > 0) {
+    return configured;
+  }
+  return DEV_FALLBACK_HMAC_KEY;
+}
+
+export function computeIdentityHmacSha256(domainSeparatedInput: string): string {
+  return createHmac('sha256', getIdentityHmacKey())
+    .update(domainSeparatedInput, 'utf8')
+    .digest('hex')
+    .toLowerCase();
+}
 
 export function normalizeIdNumber(raw: string): string {
   return (raw || '')
@@ -95,7 +130,7 @@ export function hashNormalizedIdNumber(idType: string, idNumber: string): string
   const normType = (idType || 'government_id').toLowerCase().trim();
   const normNum = normalizeIdNumber(idNumber);
   if (!normNum) return '';
-  return computeSha256HexServer(`fundora:id:${normType}:${normNum}`);
+  return computeIdentityHmacSha256(`fundora:id:${normType}:${normNum}`);
 }
 
 export function hashNormalizedMobile(mobile: string): string {
@@ -107,7 +142,7 @@ export function hashNormalizedMobile(mobile: string): string {
     normalized = `0${digits}`;
   }
   if (!normalized) return '';
-  return computeSha256HexServer(`fundora:mobile:${normalized}`);
+  return computeIdentityHmacSha256(`fundora:mobile:${normalized}`);
 }
 
 export function hashNormalizedNameAndBirthdate(
@@ -124,7 +159,7 @@ export function hashNormalizedNameAndBirthdate(
     .replace(/[^a-z0-9]/g, '')
     .trim();
   const normBirth = (birthDate || '').trim();
-  return computeSha256HexServer(`fundora:identity:${normFirst}:${normLast}:${normBirth}`);
+  return computeIdentityHmacSha256(`fundora:identity:${normFirst}:${normLast}:${normBirth}`);
 }
 
 export function maskSensitiveIdNumber(raw: string): string {

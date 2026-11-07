@@ -17,7 +17,13 @@ export const APP_CONFIG = {
   },
   near: {
     networkId: (import.meta.env.VITE_NEAR_NETWORK_ID || 'testnet') as 'testnet' | 'mainnet',
-    contractId: import.meta.env.VITE_NEAR_CONTRACT_ID || 'escrow.fundora.testnet',
+    contractId: import.meta.env.VITE_NEAR_CONTRACT_ID || 'contract.fundora.testnet',
+    aiAuditorAccountId:
+      import.meta.env.VITE_NEAR_AUDITOR_ID || 'auditor.fundora.testnet',
+    storageReserveYocto: '50000000000000000000000', // 0.05 NEAR per FD-SDLC-05
+    storageReserveNear: '0.05',
+    functionCallAllowanceYocto: '250000000000000000000000', // 0.25 NEAR gas allowance
+    functionCallAllowedMethods: ['submit_milestone_proof', 'vote_milestone'] as const,
     rpcUrl: import.meta.env.VITE_NEAR_RPC_URL || 'https://rpc.testnet.near.org',
     explorerBaseUrl:
       import.meta.env.VITE_NEAR_EXPLORER_URL || 'https://testnet.nearblocks.io',

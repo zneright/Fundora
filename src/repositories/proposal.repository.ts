@@ -6,6 +6,19 @@
 import { dbGetById, dbListCollection, dbSetDocument, dbUpdateDocument } from './db.helper';
 import type { ProposalDocument, TransactionReferenceDocument } from '../types';
 
+export function generateDeterministicProjectId(
+  psgcCode: string,
+  timestampMs: number = Date.now()
+): string {
+  const cleanPsgc = (psgcCode || '0000000000').replace(/\D/g, '').padEnd(10, '0').slice(0, 10);
+  return `proj_${cleanPsgc}_${timestampMs}`;
+}
+
+export function isValidDeterministicProjectId(projectId: string): boolean {
+  const clean = (projectId || '').trim();
+  return /^(proj|prop)_[a-zA-Z0-9_-]{4,64}$/.test(clean);
+}
+
 export const proposalRepository = {
   async getById(proposalId: string): Promise<ProposalDocument | null> {
     return dbGetById<ProposalDocument>('proposals', proposalId);
@@ -19,8 +32,10 @@ export const proposalRepository = {
   },
 
   async saveProposal(proposal: ProposalDocument): Promise<ProposalDocument> {
-    if (!proposal.id.startsWith('prop_')) {
-      throw new Error(`Proposal ID must use canonical "prop_<uuid>" format. Received: ${proposal.id}`);
+    if (!isValidDeterministicProjectId(proposal.id)) {
+      throw new Error(
+        `Proposal ID must use canonical "proj_<psgc>_<timestamp>" or "prop_<id>" format. Received: ${proposal.id}`
+      );
     }
     return dbSetDocument<ProposalDocument>('proposals', proposal.id, proposal);
   },

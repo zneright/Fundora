@@ -3,6 +3,25 @@
  */
 
 import type { ResubmissionTarget } from '../types';
+import { RESUBMISSION_PRESETS } from './lifecycle';
+
+export function buildSelectiveResubmissionDecision(
+  target: ResubmissionTarget,
+  rejectionReason: string,
+  customFields?: string[]
+): {
+  resubmissionTarget: ResubmissionTarget;
+  allowedFields: string[];
+  rejectionReason: string;
+} {
+  const preset = RESUBMISSION_PRESETS[target] || RESUBMISSION_PRESETS.full_package;
+  return {
+    resubmissionTarget: target,
+    allowedFields:
+      target === 'custom' && customFields ? customFields : preset.allowedFields,
+    rejectionReason,
+  };
+}
 
 export interface RejectionCategoryOption {
   code: string;

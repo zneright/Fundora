@@ -6,6 +6,7 @@
 
 import {
   assertNoForbiddenSecretFields,
+  dbDeleteDocument,
   dbGetById,
   dbListCollection,
   dbSetDocument,
@@ -28,12 +29,59 @@ export const walletRepository = {
     return links.find((l) => l.isPrimary) || links[0] || null;
   },
 
+  async listByUid(uid: string): Promise<WalletLinkDocument[]> {
+    return dbListCollection<WalletLinkDocument>('wallet_links', [
+      { field: 'uid', op: '==', value: uid },
+    ]);
+  },
+
+  async getByNearAccountId(nearAccountId: string): Promise<WalletLinkDocument | null> {
+    const clean = nearAccountId.trim().toLowerCase();
+    const links = await dbListCollection<WalletLinkDocument>('wallet_links', [
+      { field: 'nearAccountId', op: '==', value: clean },
+    ]);
+    return links[0] || null;
+  },
+
   async linkNearAccount(payload: WalletLinkDocument): Promise<WalletLinkDocument> {
     assertNoForbiddenSecretFields(payload, 'wallet_links');
-    if (!isValidNearAccountId(payload.nearAccountId)) {
+    const cleanAccount = payload.nearAccountId.trim().toLowerCase();
+    if (!isValidNearAccountId(cleanAccount)) {
       throw new Error(`Invalid NEAR Account ID format: "${payload.nearAccountId}"`);
     }
-    return dbSetDocument<WalletLinkDocument>('wallet_links', payload.id, payload);
+
+    // Enforce 1-wallet-1-user Sybil protection across the platform
+    const existingBinding = await this.getByNearAccountId(cleanAccount);
+    if (existingBinding && existingBinding.uid !== payload.uid) {
+      throw new Error(
+        `ERR_WALLET_ALREADY_BOUND: NEAR account "${cleanAccount}" is already linked to another user profile.`
+      );
+    }
+
+    const existingUserLinks = await this.listByUid(payload.uid);
+    for (const prev of existingUserLinks) {
+      if (prev.id !== payload.id && prev.isPrimary && payload.isPrimary) {
+        await dbSetDocument<WalletLinkDocument>('wallet_links', prev.id, {
+          ...prev,
+          isPrimary: false,
+        });
+      }
+    }
+
+    return dbSetDocument<WalletLinkDocument>('wallet_links', payload.id, {
+      ...payload,
+      nearAccountId: cleanAccount,
+    });
+  },
+
+  async unlinkNearAccount(uid: string, nearAccountId: string): Promise<void> {
+    const cleanAccount = nearAccountId.trim().toLowerCase();
+    const userLinks = await this.listByUid(uid);
+    for (const link of userLinks) {
+      if (link.nearAccountId.toLowerCase() === cleanAccount) {
+        await dbDeleteDocument('wallet_links', link.id);
+      }
+    }
   },
 
   async getById(linkId: string): Promise<WalletLinkDocument | null> {

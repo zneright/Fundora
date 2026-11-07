@@ -215,3 +215,17 @@ Fundora preserves the high-value civic receipt workflow (`ReceiptModal` and down
   - `Document Integrity Hash`: SHA-256 hash of the canonical receipt payload
   - `Verification QR Code`: Encodes the direct **NearBlocks Testnet Explorer URL** (`https://testnet.nearblocks.io/txns/{txHash}`) so any resident, official, or auditor can scan the PDF with a phone camera and verify the transaction on the live NEAR blockchain.
 
+---
+
+## 7. Phase 4 Implementation & Verification Summary
+
+- **NEAR Wallet Selector & Contract Service:**
+  - [`src/contexts/NearWalletContext.tsx`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/src/contexts/NearWalletContext.tsx) — Non-custodial wallet connection (`MyNearWallet`, `Meteor Wallet`, `HERE Wallet`), account switching, 1-wallet-1-user Sybil uniqueness enforcement (`ERR_WALLET_ALREADY_BOUND`), network mismatch validation (`ERR_NETWORK_MISMATCH`), and scoped `0 yoctoNEAR` Function-Call Access Key session management (`submit_milestone_proof`, `vote_milestone`).
+  - [`src/services/nearContract.service.ts`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/src/services/nearContract.service.ts) — Authoritative contract bindings for `create_project`, `submit_milestone_proof`, `vote_milestone`, `finalize_milestone_vote`, `refund_project`, `retry_failed_milestone_payout`, `register_verified_resident`, `set_sk_official`, and view methods (`get_project`, `get_projects_by_barangay`, `get_ai_attestations`, `is_verified_resident`), plus the 5-state transaction lifecycle (`SUBMITTED`, `PENDING`, `SUCCESSFUL`, `FAILED`, `RECONCILIATION_REQUIRED`) and `reconcileProjectState` recovery engine.
+- **Core Role Workspaces:**
+  - [`src/components/AdminPanel.tsx`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/src/components/AdminPanel.tsx) — Resident KYC approval & on-chain registration, selective resubmission presets, proposal review with explicit Full-Access wallet confirmation for `create_project`, and treasury-only `refund_project` routing.
+  - [`src/components/SKWorkspace.tsx`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/src/components/SKWorkspace.tsx) — Deterministic `proj_<psgc>_<timestamp>` proposal authoring, 40/40/20 milestone tranche allocation, advisory AI procurement audit trigger, and `submit_milestone_proof` integration.
+  - [`src/components/YouthDashboard.tsx`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/src/components/YouthDashboard.tsx) — Eligible Youth Resident (`15–30`) 1-resident-1-vote quorum voting (`vote_milestone`), read-only Over-30 `viewer` enforcement, and finality-verified tranche payout status display.
+  - [`src/components/ActivityView.tsx`](file:///C:/Users/Renz%20Jericho%20Buday/Fundora/src/components/ActivityView.tsx) — Transaction reference ledger (`FD-RCPT-...`) and one-click `RECONCILIATION_REQUIRED` state synchronization.
+
+

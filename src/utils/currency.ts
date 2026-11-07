@@ -50,3 +50,12 @@ export function phpToNear(phpAmount: number, rate = APP_CONFIG.near.phpPerNearRa
   if (!rate || rate <= 0) return '0.00';
   return (phpAmount / rate).toFixed(4);
 }
+
+export function nearToPhp(
+  nearAmount: string | number,
+  rate = APP_CONFIG.near.phpPerNearRate
+): number {
+  const num = Number(nearAmount || 0);
+  if (Number.isNaN(num) || !rate || rate <= 0) return 0;
+  return Math.round(num * rate * 100) / 100;
+}

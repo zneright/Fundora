@@ -8,16 +8,53 @@ import {
   CheckCircle2,
   Clock,
   RefreshCw,
+  Wallet,
+  Activity,
+  LayoutDashboard,
+  UserCheck,
+  KeyRound,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useNearWallet } from '../contexts/NearWalletContext';
 import { NetworkBadge } from '../components/NetworkBadge';
+import { AdminPanel } from '../components/AdminPanel';
+import { SKWorkspace } from '../components/SKWorkspace';
+import { YouthDashboard } from '../components/YouthDashboard';
+import { ActivityView } from '../components/ActivityView';
+import type { SupportedWalletProviderId } from '../services/nearContract.service';
 import { AuthPage } from './auth/AuthPage';
 
 export const MainLayout: React.FC = () => {
   const { userProfile, registrationRecord, signOut, refreshProfile } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const {
+    isConnected,
+    activeAccountId,
+    connectedAccounts,
+    selectedWalletId,
+    supportedWallets,
+    accessKeyMode,
+    networkMismatchError,
+    activeTransaction,
+    pendingReconciliations,
+    connectWallet,
+    disconnectWallet,
+    switchAccount,
+    setAccessKeyMode,
+    reconcileProject,
+  } = useNearWallet();
+
   const [editingResubmission, setEditingResubmission] = useState(false);
+  const [activeTab, setActiveTab] = useState<'workspace' | 'activity' | 'profile'>(
+    'workspace'
+  );
+  const [walletProviderInput, setWalletProviderInput] =
+    useState<SupportedWalletProviderId>('my-near-wallet');
+  const [walletAccountInput, setWalletAccountInput] = useState('');
+  const [enableFnCallKey, setEnableFnCallKey] = useState(true);
+  const [walletError, setWalletError] = useState<string | null>(null);
 
   if (!userProfile) return null;
 
@@ -34,6 +71,44 @@ export const MainLayout: React.FC = () => {
   }
 
   const roleThemeClass = `role-${userProfile.role}`;
+
+  const defaultSuggestedAccount =
+    userProfile.nearAccountId ||
+    `${userProfile.firstName.toLowerCase().replace(/[^a-z0-9]/g, '') || 'user'}.${userProfile.role.replace('_', '')}.testnet`;
+
+  const handleConnectWallet = async () => {
+    setWalletError(null);
+    const targetAccount = (walletAccountInput || defaultSuggestedAccount).trim();
+    try {
+      await connectWallet({
+        walletProviderId: walletProviderInput,
+        accountId: targetAccount,
+        enableFunctionCallSession: enableFnCallKey,
+      });
+      setWalletAccountInput('');
+    } catch (err) {
+      setWalletError(err instanceof Error ? err.message : String(err));
+    }
+  };
+
+  const handleSwitchAccount = async (nextAccount: string) => {
+    setWalletError(null);
+    try {
+      await switchAccount(nextAccount);
+    } catch (err) {
+      setWalletError(err instanceof Error ? err.message : String(err));
+    }
+  };
+
+  const renderPrimaryRoleWorkspace = () => {
+    if (userProfile.role === 'barangay_admin' || userProfile.role === 'system_admin') {
+      return <AdminPanel />;
+    }
+    if (userProfile.role === 'sk_official') {
+      return <SKWorkspace />;
+    }
+    return <YouthDashboard />;
+  };
 
   return (
     <div className={`desktop-bank-shell ${roleThemeClass}`}>
@@ -80,7 +155,8 @@ export const MainLayout: React.FC = () => {
         </header>
 
         <main className="banking-app-container page-enter">
-          <div className="civic-master-card">
+          {/* 1. MASTER CIVIC & WALLET BAR */}
+          <div className="civic-master-card" style={{ marginBottom: '1.15rem' }}>
             <div className="civic-card-top">
               <span className="civic-card-chip-tag">
                 <ShieldCheck size={14} /> Fundora Verified Jurisdiction Profile
@@ -103,14 +179,193 @@ export const MainLayout: React.FC = () => {
               </span>
             </div>
 
-            <div>
-              <div className="civic-balance-label">Authenticated Civic Member</div>
-              <div className="civic-balance-amount" style={{ fontSize: '2rem' }}>
-                {userProfile.displayName}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                flexWrap: 'wrap',
+                gap: '1rem',
+              }}
+            >
+              <div>
+                <div className="civic-balance-label">Authenticated Civic Member</div>
+                <div className="civic-balance-amount" style={{ fontSize: '1.85rem' }}>
+                  {userProfile.displayName}
+                </div>
+                <div className="civic-balance-sub">
+                  Role: {userProfile.role.toUpperCase()} • Age Bracket:{' '}
+                  {userProfile.ageYears} yrs ({userProfile.ageBracketStatus})
+                </div>
               </div>
-              <div className="civic-balance-sub">
-                Role: {userProfile.role.toUpperCase()} • Age Bracket: {userProfile.ageYears} yrs (
-                {userProfile.ageBracketStatus})
+
+              {/* NEAR Wallet Selector Control Strip */}
+              <div
+                data-testid="near-wallet-selector-bar"
+                style={{
+                  background: 'rgba(15, 23, 42, 0.35)',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '0.75rem',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  minWidth: '300px',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    marginBottom: '0.45rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                  }}
+                >
+                  <Wallet size={14} /> NEAR Wallet Selector (Non-Custodial)
+                </div>
+
+                {isConnected && activeAccountId ? (
+                  <div style={{ display: 'grid', gap: '0.45rem', fontSize: '0.8rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <span>
+                        Connected:{' '}
+                        <code data-testid="connected-near-account">{activeAccountId}</code> (
+                        {selectedWalletId})
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline"
+                        data-testid="disconnect-wallet-btn"
+                        onClick={() => void disconnectWallet()}
+                      >
+                        Disconnect
+                      </button>
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '0.5rem',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <span>
+                        <KeyRound size={12} style={{ verticalAlign: 'middle' }} /> Session
+                        Key Mode:{' '}
+                        <code data-testid="wallet-access-key-mode">{accessKeyMode}</code>
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline"
+                        data-testid="toggle-key-mode-btn"
+                        onClick={() =>
+                          setAccessKeyMode(
+                            accessKeyMode === 'full_access_wallet'
+                              ? 'function_call_session'
+                              : 'full_access_wallet'
+                          )
+                        }
+                      >
+                        Switch Key Mode
+                      </button>
+                    </div>
+
+                    {connectedAccounts.length > 1 && (
+                      <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                        <span>Switch Account:</span>
+                        {connectedAccounts.map((acc) => (
+                          <button
+                            key={acc}
+                            type="button"
+                            className="btn btn-sm btn-outline"
+                            disabled={acc === activeAccountId}
+                            onClick={() => void handleSwitchAccount(acc)}
+                          >
+                            {acc}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gap: '0.45rem' }}>
+                    <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                      <select
+                        className="form-input"
+                        style={{ width: 'auto', fontSize: '0.78rem', padding: '0.3rem 0.5rem' }}
+                        data-testid="wallet-provider-select"
+                        value={walletProviderInput}
+                        onChange={(e) =>
+                          setWalletProviderInput(
+                            e.target.value as SupportedWalletProviderId
+                          )
+                        }
+                      >
+                        {supportedWallets.map((w) => (
+                          <option key={w.id} value={w.id}>
+                            {w.name}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="text"
+                        className="form-input"
+                        style={{ flex: 1, minWidth: '165px', fontSize: '0.78rem', padding: '0.3rem 0.5rem' }}
+                        data-testid="wallet-account-input"
+                        placeholder={defaultSuggestedAccount}
+                        value={walletAccountInput}
+                        onChange={(e) => setWalletAccountInput(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-primary"
+                        data-testid="connect-wallet-btn"
+                        onClick={() => void handleConnectWallet()}
+                      >
+                        Connect Wallet
+                      </button>
+                    </div>
+                    <label
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={enableFnCallKey}
+                        onChange={(e) => setEnableFnCallKey(e.target.checked)}
+                      />
+                      <span>
+                        Enable 0 NEAR Function-Call session key for voting &amp; proof uploads
+                      </span>
+                    </label>
+                  </div>
+                )}
+
+                {(walletError || networkMismatchError) && (
+                  <div
+                    role="alert"
+                    data-testid="wallet-error-banner"
+                    style={{
+                      marginTop: '0.4rem',
+                      fontSize: '0.76rem',
+                      color: '#fca5a5',
+                    }}
+                  >
+                    {walletError || networkMismatchError}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -128,50 +383,161 @@ export const MainLayout: React.FC = () => {
             )}
           </div>
 
-          <div className="grid-2-equal">
-            <div className="bank-card">
-              <h3 className="bank-card-title">Public Routing Record (`users/{'{uid}'}`)</h3>
-              <p className="bank-card-subtitle">
-                Contains strictly non-sensitive jurisdiction and role routing metadata
-              </p>
-              <div className="bank-card-body" style={{ marginTop: '0.85rem', fontSize: '0.84rem' }}>
-                <div>
-                  <strong>UID:</strong> <code>{userProfile.uid}</code>
+          {/* 2. LIVE TRANSACTION LIFECYCLE & RECONCILIATION STATUS BANNER */}
+          {activeTransaction && (
+            <div
+              className="bank-card"
+              data-testid="active-tx-lifecycle-banner"
+              style={{
+                marginBottom: '1rem',
+                padding: '0.85rem 1rem',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>
+                  NEAR Transaction Status:{' '}
+                  <code data-testid="active-tx-status">{activeTransaction.status}</code> •
+                  Method: <code>{activeTransaction.methodName}</code>
                 </div>
-                <div>
-                  <strong>Barangay ID:</strong> <code>{userProfile.barangayId}</code>
-                </div>
-                <div>
-                  <strong>Canonical PSGC:</strong> <code>{userProfile.psgcCode}</code>
-                </div>
-                <div>
-                  <strong>ZIP Code:</strong> {userProfile.zipCode}
+                <div style={{ fontSize: '0.78rem', opacity: 0.85 }}>
+                  Signer: <code>{activeTransaction.signerAccountId}</code>
+                  {activeTransaction.txHash && (
+                    <>
+                      {' '}
+                      • TxHash: <code>{activeTransaction.txHash}</code>
+                    </>
+                  )}
+                  {activeTransaction.reconciliationReason && (
+                    <> • {activeTransaction.reconciliationReason}</>
+                  )}
                 </div>
               </div>
-            </div>
 
-            <div className="bank-card">
-              <h3 className="bank-card-title">
-                Isolated KYC Vault (`registration_records/{'{uid}'}`)
-              </h3>
-              <p className="bank-card-subtitle">
-                Protected by hardened Firestore rules against horizontal peer access
-              </p>
-              <div className="bank-card-body" style={{ marginTop: '0.85rem', fontSize: '0.84rem' }}>
-                <div>
-                  <strong>Formatted Address:</strong>{' '}
-                  {registrationRecord?.fullFormattedAddress || 'Protected'}
+              {activeTransaction.status === 'RECONCILIATION_REQUIRED' &&
+                activeTransaction.projectId && (
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-primary"
+                    data-testid="banner-reconcile-btn"
+                    onClick={() => void reconcileProject(activeTransaction.projectId!)}
+                  >
+                    <RefreshCw size={14} /> Sync State from NEAR
+                  </button>
+                )}
+            </div>
+          )}
+
+          {/* 3. WORKSPACE NAVIGATION TABS */}
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.6rem',
+              marginBottom: '1.15rem',
+              flexWrap: 'wrap',
+            }}
+          >
+            <button
+              type="button"
+              className={`btn btn-sm ${
+                activeTab === 'workspace' ? 'btn-primary' : 'btn-outline'
+              }`}
+              data-testid="nav-tab-workspace"
+              onClick={() => setActiveTab('workspace')}
+            >
+              <LayoutDashboard size={15} /> Primary Role Workspace ({userProfile.role})
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${
+                activeTab === 'activity' ? 'btn-primary' : 'btn-outline'
+              }`}
+              data-testid="nav-tab-activity"
+              onClick={() => setActiveTab('activity')}
+            >
+              <Activity size={15} /> Ledger Activity &amp; References
+              {pendingReconciliations.length > 0 && (
+                <span className="badge badge-warning" style={{ marginLeft: '0.4rem' }}>
+                  <AlertTriangle size={11} /> {pendingReconciliations.length}
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${
+                activeTab === 'profile' ? 'btn-primary' : 'btn-outline'
+              }`}
+              data-testid="nav-tab-profile"
+              onClick={() => setActiveTab('profile')}
+            >
+              <UserCheck size={15} /> Profile &amp; KYC Vault
+            </button>
+          </div>
+
+          {/* 4. ACTIVE TAB VIEWPORT */}
+          {activeTab === 'workspace' && renderPrimaryRoleWorkspace()}
+          {activeTab === 'activity' && <ActivityView />}
+          {activeTab === 'profile' && (
+            <div className="grid-2-equal" data-testid="profile-kyc-vault-view">
+              <div className="bank-card">
+                <h3 className="bank-card-title">Public Routing Record (`users/{'{uid}'}`)</h3>
+                <p className="bank-card-subtitle">
+                  Contains strictly non-sensitive jurisdiction and role routing metadata
+                </p>
+                <div
+                  className="bank-card-body"
+                  style={{ marginTop: '0.85rem', fontSize: '0.84rem' }}
+                >
+                  <div>
+                    <strong>UID:</strong> <code>{userProfile.uid}</code>
+                  </div>
+                  <div>
+                    <strong>Barangay ID:</strong> <code>{userProfile.barangayId}</code>
+                  </div>
+                  <div>
+                    <strong>Canonical PSGC:</strong> <code>{userProfile.psgcCode}</code>
+                  </div>
+                  <div>
+                    <strong>Linked NEAR Account:</strong>{' '}
+                    <code>{userProfile.nearAccountId || 'None'}</code>
+                  </div>
+                  <div>
+                    <strong>ZIP Code:</strong> {userProfile.zipCode}
+                  </div>
                 </div>
-                <div>
-                  <strong>Primary ID Type:</strong> {registrationRecord?.primaryIdType || 'N/A'}
-                </div>
-                <div>
-                  <strong>SHA-256 Document Hashes:</strong>{' '}
-                  {registrationRecord?.documentHashes.length || 0} recorded
+              </div>
+
+              <div className="bank-card">
+                <h3 className="bank-card-title">
+                  Isolated KYC Vault (`registration_records/{'{uid}'}`)
+                </h3>
+                <p className="bank-card-subtitle">
+                  Protected by hardened Firestore rules against horizontal peer access
+                </p>
+                <div
+                  className="bank-card-body"
+                  style={{ marginTop: '0.85rem', fontSize: '0.84rem' }}
+                >
+                  <div>
+                    <strong>Formatted Address:</strong>{' '}
+                    {registrationRecord?.fullFormattedAddress || 'Protected'}
+                  </div>
+                  <div>
+                    <strong>Primary ID Type:</strong>{' '}
+                    {registrationRecord?.primaryIdType || 'N/A'}
+                  </div>
+                  <div>
+                    <strong>SHA-256 Document Hashes:</strong>{' '}
+                    {registrationRecord?.documentHashes.length || 0} recorded
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
     </div>

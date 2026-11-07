@@ -46,7 +46,7 @@ This Decision Log records all foundational product, security, blockchain, AI, da
   - *Client-encrypted private keys in Firestore:* Still vulnerable to weak user passwords and XSS key exfiltration.
 - **Source Evidence:** [`src/services/inAppWallet.service.ts`](file:///C:/Users/Renz%20Jericho%20Buday/barangay-bond/src/services/inAppWallet.service.ts#L62-L71), [`firestore.rules`](file:///C:/Users/Renz%20Jericho%20Buday/barangay-bond/firestore.rules#L96).
 - **Consequences:** Zero custodial key liability; honest adherence to NEAR Protocol access-key semantics.
-- **Approval Status:** `Approved — Authorized for Implementation (Nov 7, 2026)`
+- **Approval Status:** `Implemented & Verified in Phase 4 (Nov 7, 2026)`
 
 ---
 
