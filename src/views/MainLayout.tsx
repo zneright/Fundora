@@ -117,17 +117,17 @@ export const MainLayout: React.FC = () => {
     <div className={`desktop-bank-shell ${roleThemeClass}`}>
       <div className="bank-main-viewport">
         <JudgeDemoToolbar />
-        <header className="desktop-top-bar">
+        <header className="desktop-top-bar" style={{ borderBottom: '1px solid var(--border-primary)', background: 'var(--bg-surface)' }}>
           <div className="top-bar-user-info">
-            <div className="bank-brand-crest" style={{ width: 38, height: 38, borderRadius: 10, overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="bank-brand-crest" style={{ width: 42, height: 42, borderRadius: 12, overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent' }}>
               <img src="/fundora-logo.png" alt="Fundora Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div>
-              <div className="top-bar-title">
-                Fundora • Brgy. {userProfile.barangayName}
+              <div className="top-bar-title" style={{ fontSize: '1.05rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                Fundora <span style={{ opacity: 0.5 }}>•</span> <span style={{ color: 'var(--accent-green)' }}>Brgy. {userProfile.barangayName}</span>
               </div>
-              <div className="top-bar-badge">
-                <MapPin size={13} />
+              <div className="top-bar-badge" style={{ fontSize: '0.78rem' }}>
+                <MapPin size={12} style={{ color: 'var(--accent-blue)' }} />
                 <span>
                   {userProfile.cityMunicipalityName}, {userProfile.provinceName} (PSGC{' '}
                   {userProfile.psgcCode})
@@ -136,14 +136,17 @@ export const MainLayout: React.FC = () => {
             </div>
           </div>
 
-          <div className="top-bar-controls">
+          <div className="top-bar-controls" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <NetworkBadge />
-            <span className="badge badge-role">{userProfile.role.replace('_', ' ')}</span>
+            <span className="badge badge-role" style={{ textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
+              {userProfile.role.replace('_', ' ')}
+            </span>
             <button
               type="button"
               className="theme-toggle-btn"
               onClick={toggleTheme}
               aria-label="Toggle theme"
+              title="Toggle Light/Dark Theme"
             >
               {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
@@ -151,8 +154,9 @@ export const MainLayout: React.FC = () => {
               type="button"
               className="btn btn-sm btn-outline"
               onClick={() => void signOut()}
+              title="Sign Out of Session"
             >
-              <LogOut size={15} /> Sign Out
+              <LogOut size={14} /> Sign Out
             </button>
           </div>
         </header>
@@ -436,12 +440,17 @@ export const MainLayout: React.FC = () => {
           )}
 
           {/* 3. WORKSPACE NAVIGATION TABS */}
-          <div
+          <nav
+            aria-label="Civic Workspace Navigation"
             style={{
               display: 'flex',
-              gap: '0.6rem',
-              marginBottom: '1.15rem',
+              gap: '0.5rem',
+              marginBottom: '1.25rem',
               flexWrap: 'wrap',
+              padding: '0.35rem',
+              background: 'var(--bg-elevated)',
+              borderRadius: '16px',
+              border: '1px solid var(--border-primary)',
             }}
           >
             <button
@@ -449,16 +458,28 @@ export const MainLayout: React.FC = () => {
               className={`btn btn-sm ${
                 activeTab === 'workspace' ? 'btn-primary' : 'btn-outline'
               }`}
+              style={{
+                borderRadius: '12px',
+                fontWeight: 600,
+                padding: '0.55rem 0.95rem',
+                transition: 'all 0.18s ease',
+              }}
               data-testid="nav-tab-workspace"
               onClick={() => setActiveTab('workspace')}
             >
-              <LayoutDashboard size={15} /> Primary Role Workspace ({userProfile.role})
+              <LayoutDashboard size={15} /> Primary Workspace ({userProfile.role.replace('_', ' ')})
             </button>
             <button
               type="button"
               className={`btn btn-sm ${
                 activeTab === 'transparency' ? 'btn-primary' : 'btn-outline'
               }`}
+              style={{
+                borderRadius: '12px',
+                fontWeight: 600,
+                padding: '0.55rem 0.95rem',
+                transition: 'all 0.18s ease',
+              }}
               data-testid="nav-tab-transparency"
               onClick={() => setActiveTab('transparency')}
             >
@@ -469,12 +490,18 @@ export const MainLayout: React.FC = () => {
               className={`btn btn-sm ${
                 activeTab === 'activity' ? 'btn-primary' : 'btn-outline'
               }`}
+              style={{
+                borderRadius: '12px',
+                fontWeight: 600,
+                padding: '0.55rem 0.95rem',
+                transition: 'all 0.18s ease',
+              }}
               data-testid="nav-tab-activity"
               onClick={() => setActiveTab('activity')}
             >
               <Activity size={15} /> Ledger Activity &amp; References
               {pendingReconciliations.length > 0 && (
-                <span className="badge badge-warning" style={{ marginLeft: '0.4rem' }}>
+                <span className="badge badge-warning" style={{ marginLeft: '0.4rem', padding: '0.15rem 0.45rem' }}>
                   <AlertTriangle size={11} /> {pendingReconciliations.length}
                 </span>
               )}
@@ -484,12 +511,18 @@ export const MainLayout: React.FC = () => {
               className={`btn btn-sm ${
                 activeTab === 'profile' ? 'btn-primary' : 'btn-outline'
               }`}
+              style={{
+                borderRadius: '12px',
+                fontWeight: 600,
+                padding: '0.55rem 0.95rem',
+                transition: 'all 0.18s ease',
+              }}
               data-testid="nav-tab-profile"
               onClick={() => setActiveTab('profile')}
             >
               <UserCheck size={15} /> Profile &amp; KYC Vault
             </button>
-          </div>
+          </nav>
 
           {/* 4. ACTIVE TAB VIEWPORT */}
           {activeTab === 'workspace' && renderPrimaryRoleWorkspace()}

@@ -34,16 +34,28 @@
   --accent-green-glow: rgba(0, 214, 101, 0.3);
   --accent-green-soft: rgba(0, 214, 101, 0.14);
 
-  --accent-blue:      #007dfe;
-  --accent-blue-hover: #0066d6;
-  --accent-blue-glow: rgba(0, 125, 254, 0.3);
-  --accent-blue-soft: rgba(0, 125, 254, 0.14);
+  --accent-blue:      #0284c7;
+  --accent-blue-hover: #0369a1;
+  --accent-blue-glow: rgba(2, 132, 199, 0.3);
+  --accent-blue-soft: rgba(2, 132, 199, 0.14);
 
-  --accent-yellow:    #facc15;
-  --accent-yellow-soft: rgba(250, 204, 21, 0.14);
+  --accent-teal:      #0d9488;
+  --accent-teal-soft: rgba(13, 148, 136, 0.14);
+
+  --accent-yellow:    #f59e0b;
+  --accent-yellow-soft: rgba(245, 158, 11, 0.14);
 
   --accent-danger:    #ef4444;
   --accent-danger-soft: rgba(239, 68, 68, 0.14);
+
+  /* Fundora Brand Identity Tokens */
+  --fundora-navy-dark:  #070a12;
+  --fundora-navy-card:  #0f1422;
+  --fundora-navy-elev:  #161e32;
+  --fundora-teal:       #0d9488;
+  --fundora-emerald:    #00d665;
+  --fundora-gold:       #f59e0b;
+  --fundora-blue:       #0284c7;
 
   /* Dynamic Role Accents */
   --role-accent:      #00d665;
@@ -103,8 +115,20 @@
   --accent-yellow:    #e5b800;
   --accent-yellow-soft: rgba(229, 184, 0, 0.1);
 
+  --accent-teal:      #0d9488;
+  --accent-teal-soft: rgba(13, 148, 136, 0.1);
+
   --accent-danger:    #dc2626;
   --accent-danger-soft: rgba(220, 38, 38, 0.08);
+
+  /* Fundora Brand Identity Tokens (Light) */
+  --fundora-navy-dark:  #f8fafc;
+  --fundora-navy-card:  #ffffff;
+  --fundora-navy-elev:  #f1f5f9;
+  --fundora-teal:       #0d9488;
+  --fundora-emerald:    #00c05a;
+  --fundora-gold:       #d97706;
+  --fundora-blue:       #0284c7;
 
   /* Role accents — slightly deeper for light-bg readability */
   --role-accent:      #00c05a;
