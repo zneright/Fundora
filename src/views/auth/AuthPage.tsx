@@ -11,6 +11,7 @@
 
 import React, { useState } from 'react';
 import { ShieldCheck, AlertTriangle } from 'lucide-react';
+import { InteractiveCanvasBackground } from '../../components/InteractiveCanvasBackground';
 import { LoginStep } from './LoginStep';
 import { VerifyEmailView } from './VerifyEmailView';
 import { RoleLGUStep } from './RoleLGUStep';
@@ -193,19 +194,33 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   return (
     <div
       className="banking-app-container page-enter"
-      style={{ maxWidth: 680, paddingTop: '2rem' }}
+      style={{ maxWidth: 700, paddingTop: '2.5rem', paddingBottom: '3.5rem', position: 'relative' }}
     >
-      <div className="bank-card">
+      <InteractiveCanvasBackground />
+      <div
+        className="bank-card"
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border-primary)',
+          borderRadius: 24,
+          boxShadow: '0 20px 45px -10px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 214, 101, 0.08)',
+          backdropFilter: 'blur(16px)',
+        }}
+      >
         {/* Brand Header */}
-        <div className="bank-card-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div className="bank-brand-crest" style={{ overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="bank-card-header" style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1.25rem', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div className="bank-brand-crest" style={{ width: 44, height: 44, borderRadius: 12, overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent' }}>
               <img src="/fundora-logo.png" alt="Fundora Shield Crest" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div>
-              <h1 className="bank-card-title">Fundora Civic Treasury</h1>
-              <p className="bank-card-subtitle">
-                NEAR-Native Programmable Escrow & R.A. 10742 Verified LGU Onboarding
+              <h1 className="bank-card-title" style={{ fontSize: '1.25rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                Fundora Civic Treasury
+              </h1>
+              <p className="bank-card-subtitle" style={{ fontSize: '0.82rem' }}>
+                NEAR-Native Programmable Escrow &amp; R.A. 10742 Verified LGU Onboarding
               </p>
             </div>
           </div>
