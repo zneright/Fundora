@@ -1,0 +1,346 @@
+{
+  "regions": [
+    {
+      "code": "130000000",
+      "name": "National Capital Region (NCR)",
+      "regionName": "NCR"
+    },
+    {
+      "code": "040000000",
+      "name": "Region IV-A (CALABARZON)",
+      "regionName": "CALABARZON"
+    },
+    {
+      "code": "030000000",
+      "name": "Region III (Central Luzon)",
+      "regionName": "Central Luzon"
+    },
+    {
+      "code": "070000000",
+      "name": "Region VII (Central Visayas)",
+      "regionName": "Central Visayas"
+    },
+    {
+      "code": "110000000",
+      "name": "Region XI (Davao Region)",
+      "regionName": "Davao Region"
+    }
+  ],
+  "provincesByRegion": {
+    "130000000": [
+      {
+        "code": "130000000-MM",
+        "name": "Metro Manila",
+        "regionCode": "130000000",
+        "isNcrVirtual": true
+      }
+    ],
+    "040000000": [
+      {
+        "code": "042100000",
+        "name": "Cavite",
+        "regionCode": "040000000"
+      },
+      {
+        "code": "043400000",
+        "name": "Laguna",
+        "regionCode": "040000000"
+      },
+      {
+        "code": "041000000",
+        "name": "Batangas",
+        "regionCode": "040000000"
+      }
+    ],
+    "030000000": [
+      {
+        "code": "031400000",
+        "name": "Bulacan",
+        "regionCode": "030000000"
+      },
+      {
+        "code": "035400000",
+        "name": "Pampanga",
+        "regionCode": "030000000"
+      }
+    ],
+    "070000000": [
+      {
+        "code": "072200000",
+        "name": "Cebu",
+        "regionCode": "070000000"
+      }
+    ],
+    "110000000": [
+      {
+        "code": "112400000",
+        "name": "Davao del Sur",
+        "regionCode": "110000000"
+      }
+    ]
+  },
+  "citiesMunicipalitiesByProvince": {
+    "130000000-MM": [
+      {
+        "code": "137403000",
+        "name": "City of Pasig",
+        "provinceCode": "130000000-MM",
+        "zipCode": "1605"
+      },
+      {
+        "code": "137602000",
+        "name": "City of Makati",
+        "provinceCode": "130000000-MM",
+        "zipCode": "1209"
+      },
+      {
+        "code": "137404000",
+        "name": "Quezon City",
+        "provinceCode": "130000000-MM",
+        "zipCode": "1108"
+      },
+      {
+        "code": "137607000",
+        "name": "City of Taguig",
+        "provinceCode": "130000000-MM",
+        "zipCode": "1634"
+      },
+      {
+        "code": "133900000",
+        "name": "City of Manila",
+        "provinceCode": "130000000-MM",
+        "zipCode": "1000"
+      }
+    ],
+    "042100000": [
+      {
+        "code": "042109000",
+        "name": "City of Imus",
+        "provinceCode": "042100000",
+        "zipCode": "4103"
+      },
+      {
+        "code": "042103000",
+        "name": "City of Bacoor",
+        "provinceCode": "042100000",
+        "zipCode": "4102"
+      },
+      {
+        "code": "042106000",
+        "name": "City of Dasmariñas",
+        "provinceCode": "042100000",
+        "zipCode": "4114"
+      }
+    ],
+    "043400000": [
+      {
+        "code": "043424000",
+        "name": "City of Santa Rosa",
+        "provinceCode": "043400000",
+        "zipCode": "4026"
+      }
+    ],
+    "041000000": [
+      {
+        "code": "041014000",
+        "name": "City of Lipa",
+        "provinceCode": "041000000",
+        "zipCode": "4217"
+      }
+    ],
+    "031400000": [
+      {
+        "code": "031410000",
+        "name": "City of Malolos",
+        "provinceCode": "031400000",
+        "zipCode": "3000"
+      }
+    ],
+    "035400000": [
+      {
+        "code": "035401000",
+        "name": "City of Angeles",
+        "provinceCode": "035400000",
+        "zipCode": "2009"
+      }
+    ],
+    "072200000": [
+      {
+        "code": "072217000",
+        "name": "Cebu City",
+        "provinceCode": "072200000",
+        "zipCode": "6000"
+      }
+    ],
+    "112400000": [
+      {
+        "code": "112402000",
+        "name": "Davao City",
+        "provinceCode": "112400000",
+        "zipCode": "8000"
+      }
+    ]
+  },
+  "barangaysByCityMunicipality": {
+    "137403000": [
+      {
+        "code": "1374030250",
+        "name": "San Antonio",
+        "cityMunicipalityCode": "137403000",
+        "zipCode": "1605"
+      },
+      {
+        "code": "1374030110",
+        "name": "Kapitolyo",
+        "cityMunicipalityCode": "137403000",
+        "zipCode": "1603"
+      },
+      {
+        "code": "1374030280",
+        "name": "Ugong",
+        "cityMunicipalityCode": "137403000",
+        "zipCode": "1604"
+      }
+    ],
+    "137602000": [
+      {
+        "code": "1376020030",
+        "name": "Bel-Air",
+        "cityMunicipalityCode": "137602000",
+        "zipCode": "1209"
+      },
+      {
+        "code": "1376020260",
+        "name": "San Lorenzo",
+        "cityMunicipalityCode": "137602000",
+        "zipCode": "1223"
+      },
+      {
+        "code": "1376020220",
+        "name": "Poblacion",
+        "cityMunicipalityCode": "137602000",
+        "zipCode": "1210"
+      }
+    ],
+    "137404000": [
+      {
+        "code": "1374040560",
+        "name": "Loyola Heights",
+        "cityMunicipalityCode": "137404000",
+        "zipCode": "1108"
+      },
+      {
+        "code": "1374040310",
+        "name": "Diliman",
+        "cityMunicipalityCode": "137404000",
+        "zipCode": "1101"
+      }
+    ],
+    "137607000": [
+      {
+        "code": "1376070280",
+        "name": "Fort Bonifacio",
+        "cityMunicipalityCode": "137607000",
+        "zipCode": "1634"
+      }
+    ],
+    "133900000": [
+      {
+        "code": "1339010010",
+        "name": "Barangay 659 (Intramuros)",
+        "cityMunicipalityCode": "133900000",
+        "zipCode": "1002"
+      }
+    ],
+    "042109000": [
+      {
+        "code": "0421090180",
+        "name": "Bucandala III",
+        "cityMunicipalityCode": "042109000",
+        "zipCode": "4103"
+      },
+      {
+        "code": "0421090160",
+        "name": "Bucandala I",
+        "cityMunicipalityCode": "042109000",
+        "zipCode": "4103"
+      },
+      {
+        "code": "0421090170",
+        "name": "Bucandala II",
+        "cityMunicipalityCode": "042109000",
+        "zipCode": "4103"
+      },
+      {
+        "code": "0421090010",
+        "name": "Alapan I-A",
+        "cityMunicipalityCode": "042109000",
+        "zipCode": "4103"
+      }
+    ],
+    "042103000": [
+      {
+        "code": "0421030450",
+        "name": "Molino III",
+        "cityMunicipalityCode": "042103000",
+        "zipCode": "4102"
+      }
+    ],
+    "042106000": [
+      {
+        "code": "0421060120",
+        "name": "Zone IV (Poblacion)",
+        "cityMunicipalityCode": "042106000",
+        "zipCode": "4114"
+      }
+    ],
+    "043424000": [
+      {
+        "code": "0434240050",
+        "name": "Balibago",
+        "cityMunicipalityCode": "043424000",
+        "zipCode": "4026"
+      }
+    ],
+    "041014000": [
+      {
+        "code": "0410140480",
+        "name": "Sabang",
+        "cityMunicipalityCode": "041014000",
+        "zipCode": "4217"
+      }
+    ],
+    "031410000": [
+      {
+        "code": "0314100120",
+        "name": "Bulihan",
+        "cityMunicipalityCode": "031410000",
+        "zipCode": "3000"
+      }
+    ],
+    "035401000": [
+      {
+        "code": "0354010040",
+        "name": "Balibago",
+        "cityMunicipalityCode": "035401000",
+        "zipCode": "2009"
+      }
+    ],
+    "072217000": [
+      {
+        "code": "0722170410",
+        "name": "Lahug",
+        "cityMunicipalityCode": "072217000",
+        "zipCode": "6000"
+      }
+    ],
+    "112402000": [
+      {
+        "code": "1124020990",
+        "name": "Poblacion",
+        "cityMunicipalityCode": "112402000",
+        "zipCode": "8000"
+      }
+    ]
+  }
+}

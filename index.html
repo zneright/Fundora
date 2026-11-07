@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fundora — AI-Audited Civic Treasury & Programmable Escrow on NEAR</title>
+    <meta
+      name="description"
+      content="Fundora is an AI-audited civic treasury and milestone-based programmable escrow platform built on NEAR Protocol for Philippine Sangguniang Kabataan (SK) and Barangays."
+    />
+    <script>
+      (function () {
+        var t = localStorage.getItem("fundora_theme");
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

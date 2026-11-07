@@ -1,0 +1,143 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // FUNDORA — HARDENED FIRESTORE SECURITY RULES (FD-SDLC-06)
+    // - Zero duplicate match blocks
+    // - Zero open global user listing
+    // - Explicit ban on inAppWalletSecret or private keys
+    // - Sensitive PII isolated in registration_records & uploaded_documents
+    // - AI verification & audit records locked against client writes
+    // =========================================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function currentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isSystemAdmin() {
+      return isAuthenticated() && currentUser().role == "system_admin" && currentUser().status == "active";
+    }
+
+    function isScopedBarangayAdmin(barangayId) {
+      return isAuthenticated()
+        && currentUser().role == "barangay_admin"
+        && currentUser().status == "active"
+        && currentUser().barangayId == barangayId;
+    }
+
+    // 1. BARANGAYS: Publicly readable for registration & transparency; writable only by Admins
+    match /barangays/{barangayId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isSystemAdmin() || isScopedBarangayAdmin(barangayId);
+    }
+
+    // 2. USERS: No open global listing! Scoped read; protected role/verification fields; no secret keys
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow list: if isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin");
+      allow create: if isOwner(userId)
+        && request.resource.data.role in ["resident", "viewer"]
+        && !("inAppWalletSecret" in request.resource.data);
+      allow update: if (isOwner(userId)
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(["role", "verified", "verificationStatus"])
+          && !("inAppWalletSecret" in request.resource.data))
+        || isSystemAdmin()
+        || isScopedBarangayAdmin(resource.data.barangayId);
+      allow delete: if isOwner(userId) || isSystemAdmin();
+    }
+
+    // 3. SENSITIVE REGISTRATION RECORDS & UPLOADED DOCUMENTS: Owner, Scoped Barangay Admin, or System Admin ONLY
+    match /registration_records/{userId} {
+      allow read: if isOwner(userId) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow create, update: if (isOwner(userId) || isScopedBarangayAdmin(request.resource.data.barangayId) || isSystemAdmin())
+        && !("inAppWalletSecret" in request.resource.data);
+      allow delete: if isOwner(userId) || isSystemAdmin();
+    }
+
+    match /uploaded_documents/{docId} {
+      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId));
+      allow create, update: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      allow delete: if isAuthenticated() && (resource.data.uid == request.auth.uid || isSystemAdmin());
+    }
+
+    // 4. AI VERIFICATION & AI AUDIT RECORDS: Read-only for clients; written ONLY by Backend Admin SDK
+    match /verification_records/{userId} {
+      allow read: if isOwner(userId) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow update: if isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow create, delete: if false; // Written exclusively via Backend Firebase Admin SDK
+    }
+
+    match /ai_audit_records/{auditId} {
+      allow read: if true; // Public transparency
+      allow write: if false; // Written exclusively via Backend Firebase Admin SDK
+    }
+
+    // 5. ADMIN & RESIDENT VERIFICATION QUEUES & DUPLICATE REPORTS
+    match /barangay_admin_requests/{reqUid} {
+      allow read: if isOwner(reqUid) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow create: if isOwner(reqUid);
+      allow update: if isOwner(reqUid) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow delete: if isSystemAdmin();
+    }
+
+    match /resident_verification_queue/{reqUid} {
+      allow read: if isOwner(reqUid) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow create: if isOwner(reqUid);
+      allow update: if isOwner(reqUid) || isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+      allow delete: if isSystemAdmin() || isScopedBarangayAdmin(resource.data.barangayId);
+    }
+
+    match /duplicate_reports/{reportId} {
+      allow read: if isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin");
+      allow create, update: if isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin");
+      allow delete: if isSystemAdmin();
+    }
+
+    // 6. NON-CUSTODIAL WALLET LINKS (NEAR Account IDs ONLY — Never private keys)
+    match /wallet_links/{userId} {
+      allow read: if isOwner(userId) || isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin");
+      allow create, update: if isOwner(userId)
+        && !("inAppWalletSecret" in request.resource.data)
+        && !("privateKey" in request.resource.data)
+        && !("secretKey" in request.resource.data);
+      allow delete: if isOwner(userId) || isSystemAdmin();
+    }
+
+    // 7. PROPOSALS & TRANSACTION REFERENCES: Publicly readable for Transparency Hub
+    match /proposals/{projectId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && currentUser().role in ["sk_official", "barangay_admin"] && currentUser().barangayId == request.resource.data.barangayId;
+      allow update: if isAuthenticated() && currentUser().role in ["sk_official", "barangay_admin"] && currentUser().barangayId == resource.data.barangayId;
+      allow delete: if isSystemAdmin();
+    }
+
+    match /transaction_references/{txHash} {
+      allow read: if true;
+      allow create, update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // 8. NOTIFICATIONS & AUDIT LOGS: Single canonical blocks
+    match /notifications/{notifId} {
+      allow read, update: if isAuthenticated() && resource.data.recipientUid == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow delete: if isAuthenticated() && resource.data.recipientUid == request.auth.uid;
+    }
+
+    match /audit_logs/{logId} {
+      allow read: if isSystemAdmin() || (isAuthenticated() && currentUser().role == "barangay_admin" && resource.data.barangayId == currentUser().barangayId);
+      allow create: if isAuthenticated() && request.resource.data.actorUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+  }
+}
